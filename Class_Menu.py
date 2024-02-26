@@ -6,20 +6,13 @@ import datetime
 from Class_Nivel1 import *
 from Class_Nivel2 import *
 from Class_Nivel3 import *
+from Parametros import *
 
-# Definir colores
-BLANCO = (255, 255, 255)
-NEGRO = (0, 0, 0)
-AZUL = (0, 0, 255)
-VERDE = (0, 255, 0)
-
-# Definir constantes para la pantalla
-ANCHO = 1500
-ALTO = 700
+nombre_global = "---"
 
 class Boton:
-    def __init__(self, x, y, ancho, alto, color_normal, color_hover, texto, font, action=None):
-        self.rect = pygame.Rect(x, y, ancho, alto)
+    def __init__(self, x, y, ANCHO_MENU, ALTO_MENU, color_normal, color_hover, texto, font, action=None):
+        self.rect = pygame.Rect(x, y, ANCHO_MENU, ALTO_MENU)
         self.color_normal = color_normal
         self.color_hover = color_hover
         self.texto = texto
@@ -42,9 +35,9 @@ class Boton:
                 self.action()
 
 class Menu:
-    def __init__(self):
+    def __init__(self, nombre):
         pygame.init()
-        self.screen = pygame.display.set_mode((ANCHO, ALTO))
+        self.screen = pygame.display.set_mode((ANCHO_MENU, ALTO_MENU))
         pygame.display.set_caption("Menú del juego")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 40)
@@ -52,13 +45,16 @@ class Menu:
         # Cargar la imagen del fondo del menú
         self.fondo_menu = pygame.image.load("Mapas_Fondos/Menu/castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
 
+        self.nombre_capturado = nombre
+        self.nombre_usuario = self.nombre_capturado
+
         self.botones = []
         self.create_buttons()
 
     def create_buttons(self):
         # Definir los botones del menú
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 - 50, 200, 50, AZUL, VERDE, "Jugar", self.font, self.jugar))
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 + 50, 200, 50, AZUL, VERDE, "Salir", self.font, self.salir))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 - 50, 200, 50, AZUL, VERDE, "Jugar", self.font, self.jugar))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 + 50, 200, 50, AZUL, VERDE, "Salir", self.font, self.salir))
 
     def run(self):
         running = True
@@ -75,6 +71,10 @@ class Menu:
             for boton in self.botones:
                 boton.update(self.screen)
 
+            # Mostrar el nombre de usuario en la esquina superior izquierda
+            nombre_texto = self.font.render("Usuario: " + self.nombre_usuario, True, BLANCO)
+            self.screen.blit(nombre_texto, (20, 20))
+
             pygame.display.flip()
             self.clock.tick(30)
 
@@ -82,7 +82,7 @@ class Menu:
         sys.exit()
 
     def jugar(self):
-        submenu = Submenu()
+        submenu = Submenu(self.nombre_usuario)
         submenu.run()
 
     def salir(self):
@@ -90,27 +90,28 @@ class Menu:
         sys.exit()
 
 class Submenu:
-    def __init__(self):
+    def __init__(self, nombre):
         pygame.init()
-        self.screen = pygame.display.set_mode((ANCHO, ALTO))
+        self.screen = pygame.display.set_mode((ANCHO_MENU, ALTO_MENU))
         pygame.display.set_caption("Submenú")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 40)
 
         self.fondo_menu = pygame.image.load("Mapas_Fondos/Menu/castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
 
-        self.nombre_usuario = ""  # Variable para almacenar el nombre de usuario
+        self.nombre_cap = nombre
+        self.nombre_usuario = self.nombre_cap
 
         self.botones = []
         self.create_buttons()
 
     def create_buttons(self):
         # Definir los botones del submenú
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 - 150, 200, 50, AZUL, VERDE, "Menu", self.font, self.jugar))
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 - 50, 200, 50, AZUL, VERDE, "Registro", self.font, self.registro))
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 + 50, 200, 50, AZUL, VERDE, "Jugar Nivel 1", self.font, self.jugar_nivel_1))
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 + 150, 200, 50, AZUL, VERDE, "Jugar Nivel 2", self.font, self.jugar_nivel_2))
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO/2 + 250, 200, 50, AZUL, VERDE, "Jugar Nivel 3", self.font, self.jugar_nivel_3))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 - 150, 200, 50, AZUL, VERDE, "Menu", self.font, self.jugar))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 - 50, 200, 50, AZUL, VERDE, "Registro", self.font, self.registro))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 + 50, 200, 50, AZUL, VERDE, "Jugar Nivel 1", self.font, self.jugar_nivel_1))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 + 150, 200, 50, AZUL, VERDE, "Jugar Nivel 2", self.font, self.jugar_nivel_2))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU/2 + 250, 200, 50, AZUL, VERDE, "Jugar Nivel 3", self.font, self.jugar_nivel_3))
 
     def run(self):
         running = True
@@ -144,7 +145,7 @@ class Submenu:
         self.nombre_usuario = submenu_registro.nombre
 
     def jugar(self):
-        menu = Menu()
+        menu = Menu(self.nombre_usuario)
         menu.run()
         print("Volviendo a Menu...")
 
@@ -169,22 +170,25 @@ class Submenu:
         else:
             print("Por favor, registra un usuario antes de jugar.")
 
+
+
 class SubmenuRegistro:
     def __init__(self, submenu):
-        self.submenu = submenu
+        self.Submenu = submenu
         pygame.init()
-        self.screen = pygame.display.set_mode((ANCHO, ALTO))
+        self.screen = pygame.display.set_mode((ANCHO_MENU, ALTO_MENU))
         pygame.display.set_caption("Registro de Jugador")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 40)
 
         self.fondo_menu = pygame.image.load("Mapas_Fondos/Menu/castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
 
+        # self.nombre_jugador = ""
         self.nombre = ""
         self.fecha = ""
         self.puntos = 0
-        self.input_nombre = pygame.Rect(ANCHO/2 - 150, ALTO/2 - 100, 300, 50)
-        self.input_fecha = pygame.Rect(ANCHO/2 - 150, ALTO/2, 300, 50)
+        self.input_nombre = pygame.Rect(ANCHO_MENU/2 - 150, ALTO_MENU/2 - 100, 300, 50)
+        self.input_fecha = pygame.Rect(ANCHO_MENU/2 - 150, ALTO_MENU/2, 300, 50)
 
         self.nombre_activo = True  # Variable para controlar el estado activo del campo de nombre
         self.fecha_activo = False  # Variable para controlar el estado activo del campo de fecha
@@ -194,7 +198,7 @@ class SubmenuRegistro:
 
     def create_buttons(self):
         # Botón para continuar después de ingresar los datos
-        self.botones.append(Boton(ANCHO/2 - 100, ALTO - 100, 200, 50, AZUL, VERDE, "Continuar", self.font, self.continuar))
+        self.botones.append(Boton(ANCHO_MENU/2 - 100, ALTO_MENU - 100, 200, 50, AZUL, VERDE, "Continuar", self.font, self.continuar))
 
     def run(self):
         running = True
@@ -227,13 +231,6 @@ class SubmenuRegistro:
                             self.fecha = self.fecha[:-1]
                         else:
                             self.fecha += event.unicode
-                # if event.type == pygame.MOUSEBUTTONDOWN:
-                #     # Cambiar el estado activo del campo de entrada según la posición del clic
-                #     if event.button == 1:
-                #         if not self.input_nombre.collidepoint(event.pos):
-                #             self.nombre_activo = False
-                #         if not self.input_fecha.collidepoint(event.pos):
-                #             self.fecha_activo = False
 
                 # Manejar eventos de los botones
                 for boton in self.botones:
@@ -248,8 +245,8 @@ class SubmenuRegistro:
 
             nombre_texto = self.font.render("Nombre:", True, BLANCO)
             fecha_texto = self.font.render("Fecha:", True, BLANCO)
-            self.screen.blit(nombre_texto, (ANCHO/2 - 200, ALTO/2 - 150))
-            self.screen.blit(fecha_texto, (ANCHO/2 - 200, ALTO/2 - 50))
+            self.screen.blit(nombre_texto, (ANCHO_MENU/2 - 200, ALTO_MENU/2 - 150))
+            self.screen.blit(fecha_texto, (ANCHO_MENU/2 - 200, ALTO_MENU/2 - 50))
 
             nombre = self.font.render(self.nombre, True, BLANCO)
             fecha = self.font.render(self.fecha, True, BLANCO)
@@ -268,25 +265,24 @@ class SubmenuRegistro:
 
     def continuar(self):
         if self.nombre:
-            # Crear una lista con los datos del jugador
-            datos_jugador = [self.nombre, self.puntos, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
+            # Verificar si el nombre de usuario ya está registrado
+            nombre_duplicado, usuarios_existentes = crear_verificar_nombre_usuario(self.nombre, 'datos_jugadores.csv')
+            if nombre_duplicado:
+                print("El nombre de usuario ya está registrado. Sobrescribiendo el archivo CSV.")
+                self.Submenu.nombre_usuario = self.nombre
+                self.Submenu.run()
+            else:
+                print("Nombre de usuario registrado con éxito.")
+                print("Usuarios existentes:", usuarios_existentes)
+                self.Submenu.nombre_usuario = self.nombre
+                self.Submenu.run()
 
-            # Escribir los datos en un archivo CSV
-            with open('datos_jugadores.csv', 'a', newline='') as archivo_csv:
-                escritor_csv = csv.writer(archivo_csv)
-                escritor_csv.writerow(datos_jugador)
-
-            # Actualizar el nombre de usuario en el submenú principal
-            self.submenu.nombre_usuario = self.nombre
-
-            # Volver al submenú principal
-            self.submenu.run()
+                global nombre_global
+                nombre_global = self.nombre
         else:
             print("Por favor, ingresa un nombre de usuario antes de continuar.")
 
-
-
 # Punto de entrada del programa
 if __name__ == "__main__":
-    menu = Menu()
+    menu = Menu(nombre_global)
     menu.run()

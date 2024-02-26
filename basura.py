@@ -1,3 +1,18 @@
+#INFORMACION DE PANTALLA // CODIGO VIEJO
+
+# info = pygame.display.Info()
+# tamaño_monitor = (info.current_w, info.current_h)
+# tamaño_deseado = (int(tamaño_monitor[0] * 1), int(tamaño_monitor[1] * 0.95))
+
+# Función para obtener los bordes como rectángulos
+# def obtener_bordes(ancho_pantalla, alto_pantalla):
+#     borde_izquierdo = pygame.Rect(0, 0, 1, alto_pantalla)
+#     borde_derecho = pygame.Rect(ancho_pantalla - 1, 0, 1, alto_pantalla)
+#     borde_superior = pygame.Rect(0, 0, ancho_pantalla, 1)
+#     borde_inferior = pygame.Rect(0, alto_pantalla - 1, ancho_pantalla, 1)
+#     return [borde_izquierdo, borde_derecho, borde_superior, borde_inferior]
+
+
 #     def manejador_evento(self, event):
 #         if event.type == pygame.KEYDOWN:
 #             if event.key == pygame.K_a:

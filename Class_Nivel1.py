@@ -5,9 +5,10 @@ import sys
 
 ##-------------ARCHIVOS-------------##
 
+from Class_Nivel import *
 from Parametros import *
 from Personaje import *
-from Class_Nivel import *
+
 
 ##---------------------------------##
 
@@ -41,7 +42,7 @@ class Nivel1(Nivel):
             pygame.time.delay(15)
             pygame.display.flip()
 
-            self.posicion_X_Personaje()
+            # self.posicion_X_Personaje()
 
 # Ejecutar el nivel
     @staticmethod

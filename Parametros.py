@@ -2,6 +2,7 @@
 
 import pygame
 import sys
+import csv
 import random
 import math
 import os
@@ -22,20 +23,54 @@ ROJO = (255,0,0)
 AZUL = (0,0,255)
 
 #DIMENSIONES
+ANCHO_MENU = (1500)
+ALTO_MENU = (700)
+
 ANCHO = (1600)
-ALTO = (790)
+ALTO = (800)
 
+##--------------FUNCIONES DE CONTROL-------------------##
 
-#INFORMACION DE PANTALLA // CODIGO VIEJO
+def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
+    try:
+        usuarios_existentes = []  # Lista para almacenar nombres de usuario existentes en el archivo CSV
+        
+        # Abrir el archivo CSV en modo lectura
+        with open(archivo_csv, 'r', newline='') as archivo:
+            lector_csv = csv.reader(archivo)
+            # Leer cada fila del archivo CSV
+            for fila in lector_csv:
+                usuarios_existentes.append(fila[0])  # Agregar el nombre de usuario a la lista
+        
+        # Agregar el nuevo nombre de usuario a la lista
+        usuarios_existentes.append(nombre_usuario)
+        
+        # Eliminar duplicados utilizando un conjunto
+        usuarios_existentes = list(set(usuarios_existentes))
+        
+        # Escribir en el archivo CSV después de eliminar duplicados
+        with open(archivo_csv, 'w', newline='') as archivo:
+            escritor_csv = csv.writer(archivo)
+            for usuario in usuarios_existentes:
+                escritor_csv.writerow([usuario])  # Escribir cada nombre de usuario en una nueva fila
+        
+        if nombre_usuario in usuarios_existentes:
+            print("El nombre de usuario ya está registrado.")
+            return True, usuarios_existentes
+        else:
+            print("Nombre de usuario registrado con éxito.")
+            return False, usuarios_existentes
+    except FileNotFoundError:
+        # Manejar el caso donde el archivo CSV no existe
+        print("El archivo CSV no existe.")
+        return False, []
+    except Exception as e:
+        # Manejar cualquier otro error que pueda ocurrir durante la lectura o escritura del archivo
+        print("Error al leer/escribir el archivo CSV:", e)
+        return False, []
 
-# info = pygame.display.Info()
-# tamaño_monitor = (info.current_w, info.current_h)
-# tamaño_deseado = (int(tamaño_monitor[0] * 1), int(tamaño_monitor[1] * 0.95))
+nombre_jugador_global = None
 
-# Función para obtener los bordes como rectángulos
-# def obtener_bordes(ancho_pantalla, alto_pantalla):
-#     borde_izquierdo = pygame.Rect(0, 0, 1, alto_pantalla)
-#     borde_derecho = pygame.Rect(ancho_pantalla - 1, 0, 1, alto_pantalla)
-#     borde_superior = pygame.Rect(0, 0, ancho_pantalla, 1)
-#     borde_inferior = pygame.Rect(0, alto_pantalla - 1, ancho_pantalla, 1)
-#     return [borde_izquierdo, borde_derecho, borde_superior, borde_inferior]
+def establecer_nombre_jugador(nombre):
+    global nombre_jugador_global
+    nombre_jugador_global = nombre

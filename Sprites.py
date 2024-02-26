@@ -1,10 +1,9 @@
 import pygame
+import imageio
+from moviepy.editor import VideoFileClip
 
 pygame.init()
 
-import pygame
-
-pygame.init()
 
 def estado_quieto():
     imagenes = [
@@ -91,3 +90,15 @@ def estado_ataque_ligero_izquierda():
 
     return imagenes
 
+#-------------------------------------------------------------------------ENEMIGO-------------------------------------------------------------------------#
+#-------------------------------------------------------------------------ENEMIGO-------------------------------------------------------------------------#
+
+# def estado_quieto_enemigo():
+#     gif_path = 'Jugador_Enemigos/Skeleton (Enemigos)/GIFS/Skeleton Idle.gif'
+#     clip = VideoFileClip(gif_path)
+#     clip_duration = clip.duration
+#     frames = [clip.get_frame(t) for t in range(0, int(clip_duration * clip.fps))]
+#     for frame in frames:
+#         print("Tamaño del frame:", frame.size)
+#     imagenes_convertidas = [pygame.image.fromstring(frame.tobytes(), frame.size, "RGB") for frame in frames]
+#     return imagenes_convertidas
