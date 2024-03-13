@@ -4,7 +4,7 @@ import pygame
 
 ##--------------------------------##
 
-from Personaje import *
+from Personajes.Personaje import *
 from Parametros import *
 from Sprites import *
 

@@ -8,7 +8,7 @@ from os.path import isfile, join
 ##-------------ARCHIVOS-------------##
 
 from Parametros import *
-from Personaje import *
+from Personajes.Personaje import *
 # from Enemigo import *
 from Sprites import *
 from Class_Plataforma import *

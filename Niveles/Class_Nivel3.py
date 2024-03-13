@@ -7,7 +7,7 @@ import sys
 
 from Class_Nivel import *
 from Parametros import *
-from Personaje import *
+from Personajes.Personaje import *
 
 ##---------------------------------##
 
