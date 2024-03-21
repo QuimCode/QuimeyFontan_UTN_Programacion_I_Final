@@ -4,7 +4,7 @@ import pygame
 
 ##--------------------------------##
 
-from Parametros import *
+from Game.Parametros import *
 
 ##--------------------------------##
 

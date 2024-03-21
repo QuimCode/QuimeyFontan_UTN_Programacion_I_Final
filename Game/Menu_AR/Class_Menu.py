@@ -3,10 +3,10 @@ import sys
 import csv
 import datetime
 
-from Class_Nivel1 import *
-from Class_Nivel2 import *
-from Class_Nivel3 import *
-from Parametros import *
+from ..Niveles.Class_Nivel import *
+from ..Niveles.Class_Nivel2 import *
+from ..Niveles.Class_Nivel3 import *
+from ..Parametros import *
 
 nombre_global = "---"
 

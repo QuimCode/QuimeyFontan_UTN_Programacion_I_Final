@@ -5,9 +5,9 @@ import sys
 
 ##-------------ARCHIVOS-------------##
 
-from Class_Nivel import *
-from Parametros import *
-from Personajes.Personaje import *
+from .Class_Nivel import *
+from Game.Parametros import *
+from ..Personajes.Personaje import *
 
 ##---------------------------------##
 

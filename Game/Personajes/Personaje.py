@@ -4,8 +4,9 @@ import pygame
 
 ##--------------------------------##
 
-from Parametros import *
-from Sprites import *
+from Game.Parametros import *
+# from ..Recursos.Sprites.Sprites import *
+from ..Recursos.Sprites.Sprites import *
 import datetime
 
 

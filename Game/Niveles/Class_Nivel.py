@@ -7,11 +7,11 @@ from os.path import isfile, join
 
 ##-------------ARCHIVOS-------------##
 
-from Parametros import *
-from Personajes.Personaje import *
+from Game.Parametros import *
+from ..Personajes.Personaje import *
 # from Enemigo import *
-from Sprites import *
-from Class_Plataforma import *
+from ..Recursos.Sprites.Sprites import *
+from ..Recursos.Plataformas.Class_Plataforma import *
 
 
 ##---------------------------------##
@@ -159,9 +159,9 @@ enemigos_nivel = {
 }
 
 fondos_nivel = {
-    1: "Mapas_Fondos/Free Pixel Art Forest/Preview/Background.png",
-    2: "Mapas_Fondos/Free Pixel Art Hill/PREVIEWS/Hills Free (update 3.0).png",
-    3: "Mapas_Fondos/Glacial-mountains-parallax-background_vnitti/background_glacial_mountains.png"
+    1: "Game\Recursos\Mapas_Fondos\Free Pixel Art Forest\Preview\Background.png",
+    2: "Game\Recursos\Mapas_Fondos\Free Pixel Art Hill\PREVIEWS\Hills Free (update 3.0).png",
+    3: "Game\Recursos\Mapas_Fondos\Glacial-mountains-parallax-background_vnitti\background_glacial_mountains.png"
 }
 
 # from Class_Menu import nombre_jugador_global
