@@ -161,7 +161,7 @@ enemigos_nivel = {
 fondos_nivel = {
     1: "Game\Recursos\Mapas_Fondos\Free Pixel Art Forest\Preview\Background.png",
     2: "Game\Recursos\Mapas_Fondos\Free Pixel Art Hill\PREVIEWS\Hills Free (update 3.0).png",
-    3: "Game\Recursos\Mapas_Fondos\Glacial-mountains-parallax-background_vnitti\background_glacial_mountains.png"
+    3: "Game\\Recursos\\Mapas_Fondos\\Glacial-mountains-parallax-background_vnitti\\background_glacial_mountains.png"
 }
 
 # from Class_Menu import nombre_jugador_global

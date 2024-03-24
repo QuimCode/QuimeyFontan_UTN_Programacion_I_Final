@@ -42,24 +42,20 @@ def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
             for fila in lector_csv:
                 usuarios_existentes.append(fila[0])  # Agregar el nombre de usuario a la lista
         
-        # Agregar el nuevo nombre de usuario a la lista
-        usuarios_existentes.append(nombre_usuario)
-        
-        # Eliminar duplicados utilizando un conjunto
-        usuarios_existentes = list(set(usuarios_existentes))
-        
-        # Escribir en el archivo CSV después de eliminar duplicados
-        with open(archivo_csv, 'w', newline='') as archivo:
-            escritor_csv = csv.writer(archivo)
-            for usuario in usuarios_existentes:
-                escritor_csv.writerow([usuario])  # Escribir cada nombre de usuario en una nueva fila
-        
+        # Verificar si el nombre de usuario ya está en la lista antes de agregarlo
         if nombre_usuario in usuarios_existentes:
             print("El nombre de usuario ya está registrado.")
             return True, usuarios_existentes
         else:
+            # Si el nombre de usuario no está en la lista, agregarlo y escribir en el archivo CSV
+            usuarios_existentes.append(nombre_usuario)
+            with open(archivo_csv, 'w', newline='') as archivo:
+                escritor_csv = csv.writer(archivo)
+                for usuario in usuarios_existentes:
+                    escritor_csv.writerow([usuario])
             print("Nombre de usuario registrado con éxito.")
             return False, usuarios_existentes
+
     except FileNotFoundError:
         # Manejar el caso donde el archivo CSV no existe
         print("El archivo CSV no existe.")

@@ -69,17 +69,17 @@ class SubmenuRegistro:
 
             # Dibujar campos de entrada y texto
             pygame.draw.rect(self.screen, BLANCO if self.nombre_activo else AZUL, self.input_nombre, 2)
-            pygame.draw.rect(self.screen, BLANCO if self.fecha_activo else AZUL, self.input_fecha, 2)
+            # pygame.draw.rect(self.screen, BLANCO if self.fecha_activo else AZUL, self.input_fecha, 2)
 
             nombre_texto = self.font.render("Nombre:", True, BLANCO)
-            fecha_texto = self.font.render("Fecha:", True, BLANCO)
+            # fecha_texto = self.font.render("Fecha:", True, BLANCO)
             self.screen.blit(nombre_texto, (ANCHO_MENU/2 - 200, ALTO_MENU/2 - 150))
-            self.screen.blit(fecha_texto, (ANCHO_MENU/2 - 200, ALTO_MENU/2 - 50))
+            # self.screen.blit(fecha_texto, (ANCHO_MENU/2 - 200, ALTO_MENU/2 - 50))
 
             nombre = self.font.render(self.nombre, True, BLANCO)
-            fecha = self.font.render(self.fecha, True, BLANCO)
+            # fecha = self.font.render(self.fecha, True, BLANCO)
             self.screen.blit(nombre, (self.input_nombre.x + 5, self.input_nombre.y + 5))
-            self.screen.blit(fecha, (self.input_fecha.x + 5, self.input_fecha.y + 5))
+            # self.screen.blit(fecha, (self.input_fecha.x + 5, self.input_fecha.y + 5))
 
             # Actualizar y dibujar los botones
             for boton in self.botones:
