@@ -110,3 +110,58 @@
         #     self.jugador.movimiento_detener()
 
     #-----------MOVIMIENTO/GRAVEDAD-----------#
+
+    # def aplicar_colisionar2(self, plataformas):
+    #     for plataforma in plataformas:
+    #         if self.rect.colliderect(plataforma.rect):
+    #             # Colisión vertical
+    #             if self.velocidad_Y > 0:  # Movimiento hacia abajo
+    #                 self.rect.bottom = plataforma.rect.top  # Coloca al jugador en la parte superior de la plataforma
+    #                 self.velocidad_Y = 0  # Detiene el movimiento vertical
+    #                 print("Desde Arriba")
+    #                 self.saltando = False  # El jugador no está saltando
+    #             elif self.velocidad_Y < 0:  # Movimiento hacia arriba
+    #                 self.rect.top = plataforma.rect.bottom  # Coloca al jugador en la parte inferior de la plataforma
+    #                 self.velocidad_Y = 0  # Detiene el movimiento vertical
+    #                 print("Desde Bajo")
+
+    #             # # Colisión lateral
+    #             # if self.velocidad_X > 0:  # Movimiento hacia la derecha
+    #             #     # self.rect.right = plataforma.rect.left  # Coloca al jugador en el borde izquierdo de la plataforma
+    #             #     # self.velocidad_X = 0  # Detiene el movimiento horizontal
+    #             #     print("Desde Derecha")
+    #             # elif self.velocidad_X < 0:  # Movimiento hacia la izquierda
+    #             #     # self.rect.left = plataforma.rect.right  # Coloca al jugador en el borde derecho de la plataforma
+    #             #     # self.velocidad_X = 0  # Detiene el movimiento horizontal
+    #             #     print("Desde Izquierda")
+
+
+
+
+
+
+        #     # Colisión desde arriba o abajo
+        #     if self.velocidad_Y > 0:
+        #         print("Colisión desde arriba")
+        #         self.velocidad_Y = 0
+        #         self.rect.y = plataforma.rect.top - self.rect.height
+        #         self.saltando = False
+        #     elif self.velocidad_Y < 0:
+        #         print("Colisión desde abajo")
+        #         self.velocidad_Y = 0
+        #         self.rect.y = plataforma.rect.bottom
+        #         self.saltando = False
+
+        # for plataforma in colisiones_plataformas:
+        #     # Colisión desde la izquierda o derecha
+        #     if self.velocidad_X != 0 and self.rect.colliderect(plataforma):
+        #         if self.velocidad_X < 0:  # Colisión desde la izquierda
+        #             print("Colisión desde izquierda")
+        #             self.rect.left = plataforma.rect.right
+        #             self.velocidad_X = 0
+        #             self.rebote += 1
+        #         elif self.velocidad_X > 0:  # Colisión desde la derecha
+        #             print("Colisión desde derecha")
+        #             self.rect.right = plataforma.rect.left
+        #             self.velocidad_X = 0
+        #             self.rebote += 1

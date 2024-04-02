@@ -27,10 +27,7 @@ class Nivel1(Nivel):
         super().actualizar_nivel()
 
     def dibujar_nivel1(self):
-        # for plataforma in self.plataformas:
-        #     print(f"Plataforma - X: {plataforma.rect.x}, Y: {plataforma.rect.y}, Ancho: {plataforma.rect.width}, Alto: {plataforma.rect.height}")
         super().dibujar_nivel()
-
 
     def bucle_principal_nivel1(self):
 

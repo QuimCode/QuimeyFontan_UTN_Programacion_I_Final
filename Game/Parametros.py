@@ -13,7 +13,7 @@ pygame.init()
 
 ##---------------------------------##
 
-VELOCIDAD_ANIMACION = 5
+VELOCIDAD_ANIMACION = 6
 
 # COLORES
 NEGRO = (0,0,0)
@@ -26,8 +26,8 @@ AZUL = (0,0,255)
 ANCHO_MENU = (1500)
 ALTO_MENU = (700)
 
-ANCHO = (1600)
-ALTO = (800)
+ANCHO = (1920)
+ALTO = (1050)
 
 ##--------------FUNCIONES DE CONTROL-------------------##
 

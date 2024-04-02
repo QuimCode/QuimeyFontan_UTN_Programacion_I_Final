@@ -17,6 +17,19 @@ def estado_quieto():
 
     return imagenes
 
+def estado_quieto_izquerda():
+    imagenes = [
+            pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\idle\Warrior_Idle_1.png'), True, False), (100, 100)),
+            pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\idle\Warrior_Idle_2.png'), True, False), (100, 100)),
+            pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\idle\Warrior_Idle_3.png'), True, False), (100, 100)),
+            pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\idle\Warrior_Idle_4.png'), True, False), (100, 100)),
+            pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\idle\Warrior_Idle_5.png'), True, False), (100, 100)),
+            pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\idle\Warrior_Idle_6.png'), True, False), (100, 100))
+        ]
+
+    return imagenes
+
+
 def estado_izquierda():
     imagenes = [
         pygame.transform.scale(pygame.transform.flip(pygame.image.load('Game\Recursos\Jugador_Enemigos\Warrior\Individual Sprite\Run\Warrior_Run_1.png'), True, False), (100, 100)),
