@@ -21,28 +21,28 @@ def verificar_colisiones(plataformas, enemigos, trampas, jugador):
 
     for plataforma in plataformas:
         for enemigo in enemigos:
-            # Comprobar si hay colisión entre el enemigo y la plataforma
+            # Verifico si hay colisión entre el enemigo y la plataforma
             if pygame.sprite.collide_rect(enemigo, plataforma):
                 # Si el enemigo está por encima de la plataforma
                 if enemigo.rect.bottom <= plataforma.rect.top + 10:
                     # Reposicionar al enemigo justo sobre la plataforma
                     enemigo.rect.bottom = plataforma.rect.top
-                    # Detener la velocidad vertical del enemigo
+                    # Parar la velocidad vertical del enemigo
                     enemigo.velocidad_Y = 0
-                # Si el enemigo está por debajo de la plataforma
+                # Si el enemigo se verifica debaho de la plataforma
                 elif enemigo.rect.top >= plataforma.rect.bottom - 10:
                     if enemigo.velocidad_Y > 0:
                         enemigo.rect.top = plataforma.rect.bottom
                     elif enemigo.velocidad_Y < 0:
                         enemigo.rect.top = plataforma.rect.bottom
                     enemigo.velocidad_Y = 0
-                    # # Reposicionar al enemigo justo debajo de la plataforma
+                    # Que el enemigo no atraviese la plataforma
                     # enemigo.rect.top = plataforma.rect.bottom
                     # # Detener la velocidad vertical del enemigo
                     # enemigo.velocidad_Y = 0
                 # Si el enemigo está a un lado de la plataforma
                 elif enemigo.rect.right >= plataforma.rect.left and enemigo.rect.left <= plataforma.rect.right:
-                    # Determinar la dirección del movimiento del enemigo
+                    # Verificar la dirección del movimiento del enemigo
                     if enemigo.velocidad_X > 0:  # Movimiento hacia la derecha
                         enemigo.rect.right = plataforma.rect.left
                     elif enemigo.velocidad_X < 0:  # Movimiento hacia la izquierda
