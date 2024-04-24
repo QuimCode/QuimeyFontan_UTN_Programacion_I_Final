@@ -40,5 +40,5 @@ class Nivel3(Nivel):
     def ejecutar_nivel3():
         nivel3 = Nivel3(numero=3)
         nivel3.bucle_principal_nivel3()
-        pygame.quit()  # Limpia Pygame y cierra la ventana
+        pygame.quit()  # Limpio Pygame y cierra la ventana
         sys.exit()

@@ -47,21 +47,24 @@ class Enemigo(pygame.sprite.Sprite):
         self.image = self.sprites_quieto[0]
 
         # Bandera para la dirección actual del enemigo
-        self.direccion = 'derecha'  # Inicialmente el enemigo mira hacia la derecha
+        self.direccion = 'derecha'  # Inicia mirando a la derecha
 
-
+    def movimiento_aleatorio(self):
+        # Generar movimientos aleatorios en ambas direcciones (x,y)
+        movimiento_aleatorio = random.randint(1, 100)
+        if movimiento_aleatorio == 1:
+            self.velocidad_X = random.choice([-5, 5])
+        elif movimiento_aleatorio == 2:
+            self.velocidad_X = 2
+            self.velocidad_Y = -15
+        elif movimiento_aleatorio == 3:
+            self.velocidad_X = 0
+            self.velocidad_Y = 0
 
     def actualizar_enemigo(self, limites=None):
         self.velocidad_Y += self.gravedad
 
-        # Generar movimientos aleatorios en ambas direcciones X e Y
-        movimiento_aleatorio = random.randint(1, 100)
-        if movimiento_aleatorio == 1:  
-            self.velocidad_X = random.choice([-5, 5])  
-            self.velocidad_Y = random.choice([-15, -10])
-        elif movimiento_aleatorio == 2:  # Probabilidad menor para que se queden quietos
-            self.velocidad_X = 0
-            self.velocidad_Y = 0
+        self.movimiento_aleatorio()
 
         if self.velocidad_X < 0:
             self.direccion = 'izquierda'

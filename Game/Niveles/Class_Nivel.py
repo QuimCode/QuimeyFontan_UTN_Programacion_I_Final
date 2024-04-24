@@ -11,7 +11,9 @@ from Game.Parametros import *
 from ..Personajes.Personaje import Personaje, lista_proyectiles
 from ..Personajes.Enemigo import Enemigo, EnemigoVolador, EnemigoMago
 from ..Recursos.Sprites.Sprites import *
+from ..Recursos.Trampas.Trampa import Trampa
 from ..Recursos.Plataformas.Class_Plataforma import *
+from ..Recursos.Colision.Colisiones import comprobacion_colision
 
 
 ##---------------------------------##
@@ -28,15 +30,16 @@ class Nivel:
 
         self.jugador = Personaje(10, 650, 100, 100)
 
+        self.trampas = pygame.sprite.Group()  # Grupo para almacenar las trampitas
+        for trampa in trampas_nivel.get(numero, []):
+            self.trampas.add(trampa)  # Agrega cada trampa individualmente al grupete
 
-
-        # Instanciar los enemigos para este nivel
+        # Instanciar los Proyectilñes para este nivel.
         self.grupo_proyectiles_jugador = pygame.sprite.Group()
 
-        # Instanciar los enemigos para este nivel
+        # Instanciar los enemigos para este nivel.
         self.enemigos = pygame.sprite.Group()  # Grupo para almacenar los enemigos
-
-        # Agregar enemigos al grupo
+        # Agrego enemigos al grupo
         for enemigo in enemigos_nivel.get(numero, []):
             self.enemigos.add(enemigo)  # Agrega cada enemigo individualmente
 
@@ -52,6 +55,7 @@ class Nivel:
 
         # Inicialización de la fuente
         self.fuente = pygame.font.Font(None, 36)
+        self.verificar_colisiones = comprobacion_colision
 
     def manejador_eventos_nivel(self):
         for event in pygame.event.get():
@@ -63,18 +67,27 @@ class Nivel:
                     pygame.quit()
                     sys.exit()
                 elif event.key == pygame.K_a:
-                    self.jugador.movimiento_izquierda()
+                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                        self.jugador.movimiento_izquierda()
                 elif event.key == pygame.K_d:
-                    self.jugador.movimiento_derecha()
+                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                        self.jugador.movimiento_derecha()
                 elif event.key == pygame.K_w and not self.jugador.saltando:
-                    self.jugador.movimiento_salto()
+                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                        self.jugador.movimiento_salto()
                 elif event.key == pygame.K_s:
-                    self.jugador.disparar_proyectil()
+                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                        self.jugador.disparar_proyectil()
                 elif event.key == pygame.K_k:
+                    # Verifico si el jugador está moviéndose
+                    if self.jugador.movimiendose_derecha or self.jugador.movimiendose_izquierda:
+                        # Detengo el movimiento antes de atacar
+                        self.jugador.movimiento_detener()
                     self.jugador.provocar_daño_ligero()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a or event.key == pygame.K_d:
                     self.jugador.movimiento_detener()
+
 
     def dibujar_texto_de_niveles(self, superficie):
             # Definición de posiciones de texto (en relación con la cámara)
@@ -115,15 +128,18 @@ class Nivel:
             for y in range(0, ALTO, self.fondo.get_height()):
                 self.ventana.blit(self.fondo, (x, y))
 
-        # Dibuja al jugador y otros elementos dependientes de la cámara
+        # Dibujo al jugador y otros elementos dependientes de la cámara
         self.jugador.dibujar_en_pantalla(self.ventana)
         self.dibujar_texto_de_niveles(self.ventana)
 
-        # Dibuja solo las plataformas que están dentro de la pantalla visible
+        # Dibujo solo las plataformas que estan dentro de la pantalla visible
         for plataforma in self.plataformas:
-            self.ventana.blit(plataforma.image, plataforma.rect)
+            plataforma.dibujar_en_pantalla(self.ventana)
 
-        # Dibuja todos los enemigos sin importar su posición relativa a la cámara
+        for trampa in self.trampas:
+            trampa.dibujar_trampa(self.ventana)
+
+        # Dibujo todos los enemigos sin importar su posición relativa a la cámara
         for enemigo in self.enemigos:
             enemigo.dibujar_en_pantalla(self.ventana)
 
@@ -136,35 +152,37 @@ class Nivel:
 
         self.manejador_eventos_nivel()
         self.jugador.actualizar_personaje(limites_ventana)
-        self.jugador.aplicar_colisionar(self.plataformas, self.enemigos)
+        # self.jugador.aplicar_colisionar(self.plataformas, self.enemigos)
         self.plataformas.update()
         self.enemigos.update()
         self.grupo_proyectiles_jugador.update() 
 
-        # Actualizar los enemigos individualmente
+        self.verificar_colisiones(self.plataformas, self.enemigos, self.trampas, self.jugador)
+
+        # Actualizo los enemigos individualmente
         for enemigo in self.enemigos:
-            # Verifica si el sprite es de la clase Enemigo
+            # verifico si el sprite es de la clase Enemigo
             if isinstance(enemigo, Enemigo):
-                # Llama al método actualizar_enemigo si está disponible
+                # Llamo al método actualizar_enemigo si está 
                 if hasattr(enemigo, 'actualizar_enemigo'):
                     enemigo.actualizar_enemigo(limites_ventana)
 
-
-
-
-
-
-
+        for trampa in self.trampas:
+            trampa.actualizar(self.jugador)
 
 #-------------LISTA/DICCIONARIO PLATAFORMAS-------------#
 
 plataformas_nivel = {
-    1: [],
+    1: [PlataformaBase(0, 1040, 1920, 30, ROJO), Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL)],
     2: [ ],
     3:  [ ],
 }
 
-
+trampas_nivel = {
+    1: [Trampa(500, 900)],
+    2: [],
+    3: []
+}
 
 enemigos_nivel = {
     1: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")]

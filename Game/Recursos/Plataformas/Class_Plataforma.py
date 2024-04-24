@@ -17,8 +17,8 @@ class Plataformas(pygame.sprite.Sprite):
         self.color = color
         self.image.fill(self.color)
 
-    def dibujar_en_pantalla(self, pantalla, offset_x=0):
-        pygame.draw.rect(pantalla, ROJO, self.rect.move(-offset_x, 0), 10)  # Dibuja el rectángulo de la plataforma
+    def dibujar_en_pantalla(self, pantalla, offset_x=0, padding=10):
+        pygame.draw.rect(pantalla, ROJO, self.rect.move(-offset_x, 0).inflate(padding, padding))
         pantalla.blit(self.image, (self.rect.x - offset_x, self.rect.y))
 
 class PlataformaBase(Plataformas):

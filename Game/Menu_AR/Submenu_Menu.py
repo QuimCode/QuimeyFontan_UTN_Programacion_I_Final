@@ -69,11 +69,11 @@ class Submenu:
         sys.exit()
 
     def registro(self):
-        # Importar la clase del submenu de registro aquí dentro del método registro
+        # Inicio del apartado del registro con la instancia de la misma desde la carpeta de dependencias.
         from ..Recursos.Dependencias import crear_instancia_de_submenuregistro
         submenu_registro = crear_instancia_de_submenuregistro()
         submenu_registro.run()
-        # Actualizar el nombre de usuario después de que se complete el registro
+        # Actualizar el nombre de usuario después de que se complete el registro.
         self.nombre_usuario = submenu_registro.nombre
 
     def jugar(self):

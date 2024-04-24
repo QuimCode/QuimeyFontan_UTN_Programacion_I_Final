@@ -36,35 +36,35 @@ class SubmenuRegistro:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        # Cambiar el estado activo del campo de entrada
+                        # cambiar el estado activo del campo de entrada.
                         if self.nombre_activo:
                             self.nombre_activo = False
                             self.fecha_activo = True
                         elif self.fecha_activo:
                             self.fecha_activo = False
-                    elif event.key == pygame.K_TAB:  # Cambiar de un campo de entrada a otro al presionar Tab
+                    elif event.key == pygame.K_TAB:  # cambiar de un campo de entrada a otro al presionar Tab.
                         if self.nombre_activo:
                             self.nombre_activo = False
                             self.fecha_activo = True
                         elif self.fecha_activo:
                             self.fecha_activo = False
                             self.nombre_activo = True
-                    elif self.nombre_activo:  # Capturar entrada de texto para el campo de nombre
+                    elif self.nombre_activo:  # Ccpturar entrada de texto para el campo de nombre.
                         if event.key == pygame.K_BACKSPACE:
                             self.nombre = self.nombre[:-1]
                         else:
                             self.nombre += event.unicode
-                    elif self.fecha_activo:  # Capturar entrada de texto para el campo de fecha
+                    elif self.fecha_activo:  # capturar entrada de texto para el campo de fecha
                         if event.key == pygame.K_BACKSPACE:
                             self.fecha = self.fecha[:-1]
                         else:
                             self.fecha += event.unicode
 
-                # Manejar eventos de los botones
+                # Manejar eventos de los botones.
                 for boton in self.botones:
                     boton.handle_event(event)
 
-            # Dibujar el fondo del menú
+            # dibujar el fondo del menú
             self.screen.blit(self.fondo_menu, (0, 0))
 
             # Dibujar campos de entrada y texto
@@ -81,7 +81,7 @@ class SubmenuRegistro:
             self.screen.blit(nombre, (self.input_nombre.x + 5, self.input_nombre.y + 5))
             # self.screen.blit(fecha, (self.input_fecha.x + 5, self.input_fecha.y + 5))
 
-            # Actualizar y dibujar los botones
+            # actualizar botones.
             for boton in self.botones:
                 boton.update(self.screen)
 
@@ -94,7 +94,7 @@ class SubmenuRegistro:
     def continuar(self):
         from ..Recursos.Dependencias import crear_instancia_de_submenu
         if self.nombre:
-            # Verificar si el nombre de usuario ya está registrado
+            # Verificacion de nombre.
             nombre_duplicado, usuarios_existentes = crear_verificar_nombre_usuario(self.nombre, 'datos_jugadores.csv')
             if nombre_duplicado:
                 print("El nombre de usuario ya está registrado. Sobrescribiendo el archivo CSV.")
