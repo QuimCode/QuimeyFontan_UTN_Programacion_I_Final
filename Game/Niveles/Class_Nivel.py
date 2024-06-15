@@ -13,7 +13,7 @@ from ..Personajes.Enemigo import Enemigo, EnemigoVolador, EnemigoMago
 from ..Recursos.Sprites.Sprites import *
 from ..Recursos.Trampas.Trampa import Trampa
 from ..Recursos.Plataformas.Class_Plataforma import *
-from ..Recursos.Colision.Colisiones import comprobacion_colision
+# from ..Recursos.Colision.Colisiones import comprobacion_colision
 
 
 ##---------------------------------##
@@ -23,40 +23,60 @@ class Nivel:
         pygame.init()
         pygame.joystick.init()
 
+#=================== COMPOSICION VISUAL ===================#
         self.ventana = pygame.display.set_mode((ANCHO, ALTO))
         fondo_original = pygame.image.load(fondos_nivel.get(numero))
         self.fondo = pygame.transform.scale(fondo_original, (ANCHO, ALTO)).convert()
-        self.camara_X = 0
 
-        self.jugador = Personaje(10, 650, 100, 100)
+#=================== INSTANCIA ===================#
+        #Jugador
+        self.jugador = Personaje(10, 950)
+        self.grupo_proyectiles_jugador = self.jugador.grupo_proyectiles
+        self.grupo_proyectiles_jugador = pygame.sprite.Group()
+        
 
+        #Trampas - Grupo
         self.trampas = pygame.sprite.Group()  # Grupo para almacenar las trampitas
         for trampa in trampas_nivel.get(numero, []):
-            self.trampas.add(trampa)  # Agrega cada trampa individualmente al grupete
+            self.trampas.add(trampa)  # cada trampa individualmente al grupete
 
-        # Instanciar los Proyectilñes para este nivel.
-        self.grupo_proyectiles_jugador = pygame.sprite.Group()
-
-        # Instanciar los enemigos para este nivel.
-        self.enemigos = pygame.sprite.Group()  # Grupo para almacenar los enemigos
-        # Agrego enemigos al grupo
+        #Enemigos - Grupo
+        self.enemigos = pygame.sprite.Group()  
         for enemigo in enemigos_nivel.get(numero, []):
-            self.enemigos.add(enemigo)  # Agrega cada enemigo individualmente
+            self.enemigos.add(enemigo)  # cada enemigo individualmente
+        
 
+        #Plataformas - Grupo
         self.plataformas = pygame.sprite.Group()
         self.plataformas.add(plataformas_nivel[numero])
 
-        # Variables para control del tiempo
+#=================== MARCADORES/TIEMPO/PUNTAJE ===================#
+        #Tiempo
         self.reloj = pygame.time.Clock()
+        self.tiempo_restante = 170  # Tiempo inicial en segundos (2 minutos y 50 segundos)
         self.tiempo_anterior = pygame.time.get_ticks()
         self.tiempo = 0
 
+        #Punto
         self.puntaje = 0
 
-        # Inicialización de la fuente
+        #Fuente
         self.fuente = pygame.font.Font(None, 36)
-        self.verificar_colisiones = comprobacion_colision
 
+#=================== PASAR NIVEL ===================#
+        self.numero = numero
+        # self.player_data = player_data
+        # self.player_id = player_id
+        # self.load_player_data()
+
+        # Coordenadas de transición para cada nivel
+        self.transicion_coordenadas = {
+            1: (900, 650),  # Ejemplo de coordenadas para nivel 1
+            2: (500, 400),  # Ejemplo de coordenadas para nivel 2
+            3: (700, 300)   # Ejemplo de coordenadas para nivel 3
+        }
+
+#=================== MANEJADOR/CONTROLES ===================#
     def manejador_eventos_nivel(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -67,21 +87,19 @@ class Nivel:
                     pygame.quit()
                     sys.exit()
                 elif event.key == pygame.K_a:
-                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                    if not self.jugador.atacando:
                         self.jugador.movimiento_izquierda()
                 elif event.key == pygame.K_d:
-                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                    if not self.jugador.atacando:
                         self.jugador.movimiento_derecha()
                 elif event.key == pygame.K_w and not self.jugador.saltando:
-                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                    if not self.jugador.atacando:
                         self.jugador.movimiento_salto()
                 elif event.key == pygame.K_s:
-                    if not self.jugador.atacando:  # Si el jugador no está atacando, que se mueva.
+                    if not self.jugador.atacando:
                         self.jugador.disparar_proyectil()
                 elif event.key == pygame.K_k:
-                    # Verifico si el jugador está moviéndose
                     if self.jugador.movimiendose_derecha or self.jugador.movimiendose_izquierda:
-                        # Detengo el movimiento antes de atacar
                         self.jugador.movimiento_detener()
                     self.jugador.provocar_daño_ligero()
             elif event.type == pygame.KEYUP:
@@ -89,38 +107,69 @@ class Nivel:
                     self.jugador.movimiento_detener()
 
 
+#=================== MANEJADOR/NIVELES ===================#
+    def verificar_transicion(self):
+        if self.numero in self.transicion_coordenadas:
+            x, y = self.transicion_coordenadas[self.numero]
+            if self.jugador.rect.x >= x and self.jugador.rect.y >= y:
+                return True
+        return False
+
+#=================== MANEJADOR/TEXTO ===================#
     def dibujar_texto_de_niveles(self, superficie):
-            # Definición de posiciones de texto (en relación con la cámara)
-            texto_posiciones = {
-                "Vida": (450, 50),
-                "Escudo": (600, 50),
-                "Proyectil": (800, 50),
-                "Tiempo": (1000, 50),
-                "Puntaje": (1200, 50),
-                # "Jugador": (100, 50)  # Agregamos la posición del texto del jugador
-            }
+        texto_posiciones = {
+            "Intentos": (250, 50),
+            "Vida": (450, 50),
+            "Escudo": (600, 50),
+            "Proyectil": (800, 50),
+            "Tiempo": (1000, 50),
+            "Puntaje": (1200, 50),
+        }
 
-            # Actualizar textos
-            textos = {
-                "Vida": f"Vida: {self.jugador.vida}",
-                "Escudo": f"Escudo: {self.jugador.escudo}",
-                "Proyectil": f"Proyectil: {self.jugador.proyectiles}",
-                "Tiempo": f"Tiempo: {self.tiempo}",
-                "Puntaje": f"Puntaje: {self.puntaje}",
-                # "Jugador": f"Jugador: {self.jugador_nombre}"  # Agregamos el nombre del jugador
-            }
+        minutos = self.tiempo_restante // 60
+        segundos = self.tiempo_restante % 60
+        tiempo_formateado = f"Tiempo: {minutos:02}:{segundos:02}"
 
-            for texto, posicion in texto_posiciones.items():
-                # Renderizar el texto en la superficie
-                texto_surface = self.fuente.render(textos[texto], True, BLANCO)
-                # Obtener el rectángulo del texto y establecer su posición
-                texto_rect = texto_surface.get_rect(topleft=posicion)
-                # Dibujar el texto en la ventana
-                self.ventana.blit(texto_surface, texto_rect)
+        textos = {
+            "Intentos": f"Intentos: {self.jugador.intentos}",
+            "Vida": f"Vida: {self.jugador.vida}",
+            "Escudo": f"Escudo: {self.jugador.escudo}",
+            "Proyectil": f"Proyectil: {self.jugador.proyectiles}",
+            "Tiempo": tiempo_formateado,
+            "Puntaje": f"Puntaje: {self.puntaje}",
+        }
 
-            if len(lista_proyectiles) > 0:
-                print("Lista de proyectiles Nivel:", lista_proyectiles)
-                print("Número de proyectiles en la lista Nivel:", len(lista_proyectiles))
+        for texto, posicion in texto_posiciones.items():
+            texto_surface = self.fuente.render(textos[texto], True, BLANCO)
+            texto_rect = texto_surface.get_rect(topleft=posicion)
+            self.ventana.blit(texto_surface, texto_rect)
+
+        if len(lista_proyectiles) > 0:
+            print("Lista de proyectiles Nivel:", lista_proyectiles)
+            print("Número de proyectiles en la lista Nivel:", len(lista_proyectiles))
+
+#=================== MANEJAR TIEMPO ===================#
+    def actualizar_tiempo(self):
+        tiempo_actual = pygame.time.get_ticks()
+        if tiempo_actual - self.tiempo_anterior >= 1000:  # 1000 milisegundos = 1 segundo
+            self.tiempo_restante -= 1
+            self.tiempo_anterior = tiempo_actual
+            if self.tiempo_restante <= 0:
+                self.tiempo_restante = 0
+                self.jugador.intentos -= 1
+                if self.jugador.intentos > 0:
+                    self.reiniciar_nivel()
+                else:
+                    print("Game Over")
+                    pygame.quit()
+                    sys.exit()
+
+    def reiniciar_nivel(self):
+        self.jugador.vida = self.jugador.vida_maxima  # Reiniciar la vida del jugador
+        self.jugador.rect.x = 10  # Reubicar al jugador en la posición inicial
+        self.jugador.rect.y = 650
+        self.tiempo_restante = 170  # Reiniciar el tiempo del nivel
+
 
     def dibujar_nivel(self):
         self.ventana.fill(NEGRO)
@@ -143,7 +192,9 @@ class Nivel:
         for enemigo in self.enemigos:
             enemigo.dibujar_en_pantalla(self.ventana)
 
-        self.grupo_proyectiles_jugador.draw(self.ventana)
+        for proyectil in self.grupo_proyectiles_jugador:
+            proyectil.dibujar(self.ventana)
+
 
 
 
@@ -151,13 +202,17 @@ class Nivel:
         limites_ventana = [0, ANCHO, 0, ALTO]
 
         self.manejador_eventos_nivel()
-        self.jugador.actualizar_personaje(limites_ventana)
-        # self.jugador.aplicar_colisionar(self.plataformas, self.enemigos)
+        self.jugador.actualizar_personaje(self.plataformas, self.grupo_proyectiles_jugador, self.enemigos, self.trampas, limites_ventana)
+        self.grupo_proyectiles_jugador.update()
         self.plataformas.update()
         self.enemigos.update()
-        self.grupo_proyectiles_jugador.update() 
 
-        self.verificar_colisiones(self.plataformas, self.enemigos, self.trampas, self.jugador)
+        # self.verificar_colisiones(self.plataformas, self.enemigos, self.trampas, self.jugador)
+
+        # Eliminar enemigos con vida igual o menor a 0
+        enemigos_a_eliminar = [enemigo for enemigo in self.enemigos if enemigo.vida_enemigo <= 0]
+        for enemigo in enemigos_a_eliminar:
+            self.enemigos.remove(enemigo)
 
         # Actualizo los enemigos individualmente
         for enemigo in self.enemigos:
@@ -165,18 +220,22 @@ class Nivel:
             if isinstance(enemigo, Enemigo):
                 # Llamo al método actualizar_enemigo si está 
                 if hasattr(enemigo, 'actualizar_enemigo'):
-                    enemigo.actualizar_enemigo(limites_ventana)
+                    enemigo.actualizar_enemigo(self.plataformas, self.grupo_proyectiles_jugador, limites_ventana)
 
         for trampa in self.trampas:
             trampa.actualizar(self.jugador)
 
+        self.actualizar_tiempo()
+
 #-------------LISTA/DICCIONARIO PLATAFORMAS-------------#
 
 plataformas_nivel = {
-    1: [PlataformaBase(0, 1040, 1920, 30, ROJO), Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL)],
-    2: [ ],
-    3:  [ ],
+    1: [ PlataformaBase(0, 1040, 1920, 30, ROJO)],
+    2: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
+    3:  [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
 }
+
+# Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL)
 
 trampas_nivel = {
     1: [Trampa(500, 900)],
@@ -185,7 +244,9 @@ trampas_nivel = {
 }
 
 enemigos_nivel = {
-    1: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")]
+    1: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")],
+    2: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")],
+    3: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")]
 }
 
 fondos_nivel = {
@@ -193,74 +254,6 @@ fondos_nivel = {
     2: "Game\Recursos\Mapas_Fondos\Free Pixel Art Hill\PREVIEWS\Hills1920.png",
     3: "Game\Recursos\Mapas_Fondos\Glacial-mountains-parallax-background_vnitti\HillsFrozen1920.png"
 }
-
-
-# [ Plataformas(1, 0, 845, 1000, NEGRO) Plataformas(6000, 0, 1000, 1000, NEGRO), Plataformas(1800, 630, 100, 100, NEGRO) Plataformas(799,0,6500,100,NEGRO)
-# Plataformas(1200, 520, 200, 30, AZUL),Plataformas(4200, 520, 200, 30, AZUL), Plataformas(4100, 560, 200, 30, AZUL), 
-#         Plataformas(800,100,6500,10,ROJO), PlataformaBase(795, 795, 6000, 100, ROJO),
-#         Plataformas(1022, 654, 200, 30, VERDE)
-
-# Plataformas(1, 0, 845, 1000, NEGRO), Plataformas(1200, 520, 200, 30, AZUL), Plataformas(6000, 0, 1000, 1000, NEGRO),
-#         Plataformas(1800, 730, 100, 200, NEGRO)
-
-# Plataformas(1, 0, 845, 1000, NEGRO), Plataformas(1200, 520, 200, 30, AZUL), Plataformas(6000, 0, 1000, 1000, NEGRO),
-#         Plataformas(1800, 730, 100, 200, NEGRO)
-
-
-# from Class_Menu import nombre_jugador_global
-
-# class Datos:
-#     def __init__(self):
-#         # Acceder al nombre del jugador global desde Class_Menu
-#         self.nombre_jugador = nombre_jugador_global
-
-#     def obtener_nombre_jugador(self):
-#         return self.nombre_jugador
-
-#     def establecer_nombre_jugador(self, nombre):
-#         self.nombre_jugador = nombre
-
-#     # Métodos para guardar y recuperar datos aquí
-
-
-    # def dibujar_nivel(self):
-    #     self.ventana.fill(NEGRO)
-    #     for x in range(0, 8000, self.fondo.get_width()):
-    #         for y in range(0, ALTO, self.fondo.get_height()):
-    #             self.ventana.blit(self.fondo, (x - self.camara_X, y))
-        
-    #     # Dibujar plataformas estáticas
-    #     for plataforma in self.plataformas:
-    #         self.ventana.blit(plataforma.image, plataforma.rect)
-
-    #     # Dibujar enemigos
-    #     for enemigo in self.enemigos:
-    #         self.ventana.blit(enemigo.image, enemigo.rect)
-
-    #     # Dibujar jugador
-    #     self.ventana.blit(self.jugador.imagen, self.jugador.rect)
-
-    #     # Otros elementos del HUD
-    #     self.dibujar_texto_de_niveles(self.ventana)
-
-
-    # def dibujar_nivel(self):
-    #     self.ventana.fill(NEGRO)
-    #     for x in range(0, 8000, self.fondo.get_width()):
-    #         for y in range(0, ALTO, self.fondo.get_height()):
-    #             self.ventana.blit(self.fondo, (x - self.camara_X, y))
-        
-    #     # Dibuja todas las plataformas sin importar su posición relativa a la cámara
-    #     for plataforma in self.plataformas:
-    #         self.ventana.blit(plataforma.image, (plataforma.rect.x - self.camara_X, plataforma.rect.y))
-
-    #     # Dibuja todos los enemigos sin importar su posición relativa a la cámara
-    #     for enemigo in self.enemigos:
-    #         enemigo.dibujar_en_pantalla(self.ventana, offset_x=-self.camara_X)
-
-    #     # Dibuja al jugador y otros elementos dependientes de la cámara
-    #     self.jugador.dibujar_en_pantalla(self.ventana, offset_x=-self.camara_X)
-    #     self.dibujar_texto_de_niveles(self.ventana)
 
 
 

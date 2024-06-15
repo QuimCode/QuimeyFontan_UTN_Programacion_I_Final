@@ -98,7 +98,8 @@ class Submenu:
             print("Por favor, registra un usuario antes de jugar.")
 
     def jugar_nivel_3(self):
-        if not self.nombre_usuario == "-Usuario No Registrado-":
+        # if not self.nombre_usuario == "-Usuario No Registrado-":
+        if self.nombre_usuario:
             Nivel3.ejecutar_nivel3()
             print("Iniciar nivel 3...")
         else:

@@ -165,3 +165,57 @@
         #             self.rect.right = plataforma.rect.left
         #             self.velocidad_X = 0
         #             self.rebote += 1
+
+    # def aplicar_colisionar(self, plataformas, enemigos):
+    #     tiempo_actual = datetime.datetime.now()
+    #     colisiones_plataformas = pygame.sprite.spritecollide(self, plataformas, False)
+    #     colisiones_enemigos = pygame.sprite.spritecollide(self, enemigos, False)
+
+    #     # Definir los rectángulos de colisión para diferentes partes del personaje
+    #     top_rect = self.rect.copy()
+    #     top_rect.height = 1
+    #     bottom_rect = self.rect.copy()
+    #     bottom_rect.y += bottom_rect.height
+    #     bottom_rect.height = 1
+    #     left_rect = self.rect.copy()
+    #     left_rect.width = 1
+    #     right_rect = self.rect.copy()
+    #     right_rect.x += right_rect.width
+    #     right_rect.width = 1
+
+    #     for plataforma in plataformas:
+    #         if top_rect.colliderect(plataforma.rect) and self.velocidad_Y < 0:
+    #             # Colisión desde abajo del personaje
+    #             self.velocidad_Y = 0
+    #             self.rect.top = plataforma.rect.bottom
+    #             self.saltando = False
+    #             self.colisionando = True
+
+
+    #         elif bottom_rect.colliderect(plataforma.rect) and self.velocidad_Y >= 0:
+    #             # Colisión desde arriba del personaje
+    #             self.colisionando = True
+    #             self.rect.bottom = plataforma.rect.top
+    #             self.velocidad_Y = -1
+
+    #     ataque_reciente = False
+
+    #     for enemigo in colisiones_enemigos:
+    #         tiempo_transcurrido = tiempo_actual - self.ultimo_ataque_tiempo
+
+    #         # Verificar si ha pasado suficiente tiempo desde el último ataque
+    #         if tiempo_transcurrido.total_seconds() >= self.intervalo_ataque:
+    #             # Realizar el ataque
+    #             # Resto del código para manejar la colisión con el enemigo y realizar el ataque ligero
+    #             self.ultimo_ataque_tiempo = tiempo_actual  # Actualizar el tiempo del último ataque
+                
+    #             # Verificar si ya se ha realizado un ataque recientemente
+    #             if not ataque_reciente:
+    #                 # Llamar a la función ataque_ligero() del enemigo
+    #                 enemigo.ataque_ligero(self)  # Aquí estás pasando el propio personaje como argumento
+
+    #                 ataque_reciente = True
+
+    #                 # Imprimir la vida del personaje después del ataque ligero
+    #                 print("Vida del personaje después del ataque ligero:", self.vida)
+    #                 print("Escudo del personaje después del ataque ligero:", self.escudo)

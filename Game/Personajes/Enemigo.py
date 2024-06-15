@@ -22,11 +22,8 @@ class Enemigo(pygame.sprite.Sprite):
 
         # Estadísticas
         self.vida_enemigo = 100
-        self.escudo_enemigo = 100
-        self.energia_enemigo = 100
         self.proyectiles_enemigo = 3
-        self.daño_ligero_enemigo = 20
-        self.daño_pesado_enemigo = 40
+        self.daño_ligero_enemigo = 10
         self.daño_proyectil_enemigo = 50
 
         # Velocidades iniciales
@@ -61,7 +58,72 @@ class Enemigo(pygame.sprite.Sprite):
             self.velocidad_X = 0
             self.velocidad_Y = 0
 
-    def actualizar_enemigo(self, limites=None):
+#-------------------#### COLISION #-------------------####
+
+
+    def colisionar_horizontal(self, lista_plataforma):
+        # Reiniciar los estados de colisión
+        self.colisionando = False
+
+        # Manejar colisiones horizontales
+        for plataforma in lista_plataforma:
+            if plataforma.rect.colliderect(self.rect):
+                # Colisiones desde la derecha
+                if self.velocidad_X > 0 and self.rect.right + 6 >= plataforma.rect.left:
+                    self.rect.right = plataforma.rect.left
+                    print("Colisionando derecha")
+                    self.velocidad_X = 0
+                # Colisiones desde la izquierda
+                elif self.velocidad_X < 0 and self.rect.left - 6 <= plataforma.rect.right:
+                    self.rect.left = plataforma.rect.right
+                    print("Colisionando izquierda")
+                    self.velocidad_X = 0
+                self.colisionando = True
+
+        # Actualizar la posición real del personaje
+        self.rect.x = self.rect.x
+
+    def colisionar_vertical(self, lista_plataforma):
+        # Reiniciar los estados de colisión
+        self.colisionando_abajo = False
+
+        # Manejar colisiones verticales
+        for plataforma in lista_plataforma:
+            if plataforma.rect.colliderect(self.rect):
+                if self.velocidad_Y > 0:  # Moviendo hacia abajo
+                    self.rect.bottom = plataforma.rect.top
+                    self.saltando = False
+                    self.colisionando_abajo = True
+                elif self.velocidad_Y < 0:  # Moviendo hacia arriba
+                    self.rect.top = plataforma.rect.bottom
+                self.velocidad_Y = 0
+                print("Colisionando arriba o abajo")
+
+        # Actualizar la posición real del personaje
+        self.rect.y = self.rect.y
+
+    def colisionar_proyectil(self, lista_proyectiles_jugador):
+        # Reiniciar los estados de colisión lateral
+        self.colisionando_izquierda = False
+        self.colisionando_derecha = False
+
+        for proyectil in lista_proyectiles_jugador:
+            if proyectil.rect.colliderect(self.rect):
+                if self.velocidad_X > 0:
+                    # El enemigo se mueve hacia la derecha, el proyectil lo golpea desde la izquierda
+                    self.rect.right = proyectil.rect.left
+                    self.colisionando_derecha = True
+                elif self.velocidad_X < 0:
+                    # El enemigo se mueve hacia la izquierda, el proyectil lo golpea desde la derecha
+                    self.rect.left = proyectil.rect.right
+                    self.colisionando_izquierda = True
+
+                # Reducir la vida del enemigo por el impacto del proyectil
+                self.vida_enemigo -= 15
+                print(f"El jugador hizo daño al enemigo. Vida del enemigo: {self.vida_enemigo}")
+
+
+    def actualizar_enemigo(self, lista_plataformas, lista_proyectiles, limites=None):
         self.velocidad_Y += self.gravedad
 
         self.movimiento_aleatorio()
@@ -72,6 +134,8 @@ class Enemigo(pygame.sprite.Sprite):
             self.direccion = 'derecha'
         else:
             self.direccion = 'quieto'
+        
+        self.colisionar_horizontal(lista_plataformas)
 
         # Definir las animaciones según la dirección actual del enemigo
         if self.direccion == "derecha":
@@ -84,6 +148,11 @@ class Enemigo(pygame.sprite.Sprite):
         # Actualizar la posición del enemigo según la velocidad en ambas direcciones
         self.rect.x += self.velocidad_X
         self.rect.y += self.velocidad_Y
+
+
+        self.colisionar_vertical(lista_plataformas)
+
+        self.colisionar_proyectil(lista_proyectiles)
 
         # Aplicar límites si se proporcionan
         if limites:
@@ -120,14 +189,14 @@ class Enemigo(pygame.sprite.Sprite):
         # Dibujar la imagen del enemigo centrada dentro del rectángulo de colisión
         pantalla.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
 
-    def ataque_ligero(self, objetivo):
-        if objetivo.escudo > 0:
-            objetivo.escudo -= self.daño_ligero_enemigo
-        else:
-            objetivo.vida -= self.daño_ligero_enemigo
+    # def ataque_ligero(self, objetivo):
+    #     if objetivo.escudo > 0:
+    #         objetivo.escudo -= self.daño_ligero_enemigo
+    #     else:
+    #         objetivo.vida -= self.daño_ligero_enemigo
 
-        objetivo.vida = max(objetivo.vida, 0)
-        objetivo.escudo = max(objetivo.escudo, 0)
+    #     objetivo.vida = max(objetivo.vida, 0)
+    #     objetivo.escudo = max(objetivo.escudo, 0)
 
 class EnemigoVolador(Enemigo):
     def __init__(self, x, y, ancho=100, alto=90):
@@ -143,7 +212,7 @@ class EnemigoVolador(Enemigo):
         # Inicializar la dirección del enemigo volador
         self.direccion_vuelo = 'derecha'  # Empezar volando hacia la derecha
 
-    def actualizar_enemigo(self, limites=None):
+    def actualizar_enemigo(self, plataformas, grupo_proyectiles_jugador, limites):
         # Generar movimientos aleatorios en la dirección X
         movimiento_aleatorio = random.randint(1, 100)
         if movimiento_aleatorio == 1:  
@@ -234,7 +303,7 @@ class EnemigoMago(Enemigo):
             if self.indice_animacion_quieto >= len(self.sprites_quietoD_mago):
                 self.indice_animacion_quieto = 0
 
-    def actualizar_enemigo(self, limites=None):
+    def actualizar_enemigo(self, plataformas, grupo_proyectiles_jugador, limites_ventana):
         # No hay movimiento para el mago, solo dispara
         self.animar_reposo()
 

@@ -4,7 +4,7 @@ from ..Sprites.ProyectilesSprites.ProyectilSpriteEnemigo import *
 from ..Sprites.ProyectilesSprites.ProyectilSpriteJugador import *
 
 class Proyectil(pygame.sprite.Sprite):
-    def __init__(self, x, y, velocidad_x, velocidad_y, ancho, alto):
+    def __init__(self, x, y, velocidad_x, velocidad_y=0, ancho=10, alto=10):
         super().__init__()
 
         # Establecer la imagen predeterminada (cuadrado rojo)
@@ -15,7 +15,7 @@ class Proyectil(pygame.sprite.Sprite):
         self.rect.y = y
 
         # Definir la velocidad en los ejes X e Y
-        self.velocidad_x = velocidad_x
+        self.velocidad_x = 15
         self.velocidad_y = velocidad_y
 
     def update(self):
@@ -25,6 +25,7 @@ class Proyectil(pygame.sprite.Sprite):
 
     def dibujar(self, pantalla):
         # Dibujar el proyectil en la pantalla
+        pygame.draw.rect(pantalla, (190, 0, 0), self.rect, 5)
         pantalla.blit(self.imagen, self.rect)
 
     def hacer_danio(self, objetivo):
@@ -33,7 +34,7 @@ class Proyectil(pygame.sprite.Sprite):
 
 
 class ProyectilEnemigo(Proyectil):
-    def __init__(self, x, y, velocidad_x, velocidad_y, ancho=100, alto=90):
+    def __init__(self, x, y, velocidad_x, velocidad_y, ancho=10, alto=10):
         # Llama al constructor de la clase padre (Proyectil)
         super().__init__(x, y, velocidad_x, velocidad_y, ancho, alto)
         
@@ -48,7 +49,7 @@ class ProyectilEnemigo(Proyectil):
         self.indice_animacion = 0
 
     def actualizar_disparo(self):
-        # Mueve el proyectil en los ejes X e Y
+        #  proyectil en los ejes X e Y
         self.rect.x += self.velocidad_x
         self.rect.y += self.velocidad_y
 
@@ -76,7 +77,7 @@ class ProyectilEnemigo(Proyectil):
         pass
 
 class ProyectilJugador(Proyectil):
-    def __init__(self, x, y, velocidad_x, velocidad_y, ancho=100, alto=90):
+    def __init__(self, x, y, velocidad_x, velocidad_y, ancho=10, alto=10):
         # Llama al constructor de la clase padre (Proyectil)
         super().__init__(x, y, velocidad_x, velocidad_y, ancho, alto)
         
@@ -89,14 +90,6 @@ class ProyectilJugador(Proyectil):
 
         # Inicializa el índice de animación
         self.indice_animacion = 0
-
-    def actualizar(self):
-        # Mueve el proyectil en los ejes X e Y
-        self.rect.x += self.velocidad_x
-        self.rect.y += self.velocidad_y
-
-        # Actualiza la imagen del proyectil para la animación
-        self.animar()
 
     def animar(self):
         # Actualiza la imagen del proyectil para la animación
@@ -114,6 +107,16 @@ class ProyectilJugador(Proyectil):
         if self.indice_animacion >= len(self.sprites_disparo_derecha):
             self.indice_animacion = 0
 
+    def actualizar(self):
+        # Mueve el proyectil en los ejes X e Y
+        self.rect.x += self.velocidad_x
+        self.rect.y += self.velocidad_y
+
+        # Actualiza la imagen del proyectil para la animación
+        self.animar()
+
+    def dibujar(self, ventana):
+        ventana.blit(self.imagen, self.rect)
+
     def hacer_danio_enemigo(self, objetivo):
-        # Implementa el método para hacer daño específico para los proyectiles del jugador
-        pass
+        objetivo.vida_enemigo -= 10

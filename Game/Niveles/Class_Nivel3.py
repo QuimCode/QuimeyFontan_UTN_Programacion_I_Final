@@ -16,23 +16,23 @@ class Nivel3(Nivel):
         super().__init__(numero)
         self.tiempo_fotograma = pygame.time.Clock()
 
-    def manejador_eventos_nivel1(self):
+    def manejador_eventos_nivel3(self):
         super().manejador_eventos_nivel()
 
-    def actualizar_nivel1(self):
+    def actualizar_nivel3(self):
         super().actualizar_nivel()
 
-    def dibujar_nivel1(self):
+    def dibujar_nivel3(self):
         super().dibujar_nivel()
 
 
     def bucle_principal_nivel3(self):
         while True:
-            self.manejador_eventos_nivel1()
-            self.actualizar_nivel1()
-            self.dibujar_nivel1()
+            self.manejador_eventos_nivel3()
+            self.actualizar_nivel3()
+            self.dibujar_nivel3()
             self.tiempo_fotograma.tick(60)
-            pygame.time.delay(15)
+            pygame.time.delay(20)
             pygame.display.flip()
 
 # Ejecutar el nivel

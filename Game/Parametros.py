@@ -1,13 +1,7 @@
 ##-------------MODULOS-------------##
 
 import pygame
-import sys
 import csv
-import random
-import math
-import os
-from os import listdir
-from os.path import isfile, join
 
 pygame.init()
 
@@ -31,42 +25,72 @@ ALTO = (1050)
 
 ##--------------FUNCIONES DE CONTROL-------------------##
 
-def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
-    try:
-        usuarios_existentes = []  # Lista para almacenar nombres de usuario existentes en el archivo CSV
-        
-        # Abrir el archivo CSV en modo lectura
-        with open(archivo_csv, 'r', newline='') as archivo:
-            lector_csv = csv.reader(archivo)
-            # Leer cada fila del archivo CSV
-            for fila in lector_csv:
-                usuarios_existentes.append(fila[0])  # Agregar el nombre de usuario a la lista
-        
-        # Verificar si el nombre de usuario ya está en la lista antes de agregarlo
-        if nombre_usuario in usuarios_existentes:
-            print("El nombre de usuario ya está registrado.")
-            return True, usuarios_existentes
-        else:
-            # Si el nombre de usuario no está en la lista, agregarlo y escribir en el archivo CSV
-            usuarios_existentes.append(nombre_usuario)
-            with open(archivo_csv, 'w', newline='') as archivo:
-                escritor_csv = csv.writer(archivo)
-                for usuario in usuarios_existentes:
-                    escritor_csv.writerow([usuario])
-            print("Nombre de usuario registrado con éxito.")
-            return False, usuarios_existentes
-
-    except FileNotFoundError:
-        # Manejar el caso donde el archivo CSV no existe
-        print("El archivo CSV no existe.")
-        return False, []
-    except Exception as e:
-        # Manejar cualquier otro error que pueda ocurrir durante la lectura o escritura del archivo
-        print("Error al leer/escribir el archivo CSV:", e)
-        return False, []
-
 nombre_jugador_global = None
 
 def establecer_nombre_jugador(nombre):
     global nombre_jugador_global
     nombre_jugador_global = nombre
+
+def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
+    global nombre_jugador_global
+    
+    try:
+        # Verificar si el archivo CSV existe
+        with open(archivo_csv, 'r', newline='') as archivo:
+            # Leer los datos del archivo CSV
+            lector_csv = csv.DictReader(archivo)
+            usuarios_existentes = {fila["Jugador"]: fila for fila in lector_csv}
+
+            # Verificar si el nombre de usuario ya existe en los datos existentes
+            if nombre_usuario in usuarios_existentes:
+                print("El nombre de usuario ya está registrado.")
+                establecer_nombre_jugador(nombre_usuario)
+                return True, usuarios_existentes
+            else:
+                # Si el nombre de usuario no existe, agregarlo a los datos
+                usuarios_existentes[nombre_usuario] = {
+                    "Intentos": 3,
+                    "Vida": 100,
+                    "Escudo": 50,
+                    "Proyectil": 0,
+                    "Tiempo": "2:30",
+                    "Puntaje": 0,
+                    "Jugador": nombre_usuario  # Se usa el nombre como ID en este caso
+                }
+                # Escribir los datos actualizados en el archivo CSV
+                with open(archivo_csv, 'w', newline='') as archivo:
+                    nombres_columnas = ["Jugador", "Intentos", "Vida", "Escudo", "Proyectil", "Tiempo", "Puntaje"]
+                    escritor_csv = csv.DictWriter(archivo, fieldnames=nombres_columnas)
+                    escritor_csv.writeheader()
+                    escritor_csv.writerows(usuarios_existentes.values())
+                print("Nombre de usuario registrado con éxito.")
+                establecer_nombre_jugador(nombre_usuario)
+                return False, usuarios_existentes
+
+    except FileNotFoundError:
+        # Si el archivo CSV no existe, crear uno nuevo y agregar el nombre de usuario
+        print("El archivo CSV no existe. Creando uno nuevo...")
+        with open(archivo_csv, 'w', newline='') as archivo:
+            nombres_columnas = ["Jugador", "Intentos", "Vida", "Escudo", "Proyectil", "Tiempo", "Puntaje"]
+            escritor_csv = csv.DictWriter(archivo, fieldnames=nombres_columnas)
+            escritor_csv.writeheader()
+            escritor_csv.writerow({
+                "Jugador": nombre_usuario,
+                "Intentos": 3,
+                "Vida": 100,
+                "Escudo": 50,
+                "Proyectil": 0,
+                "Tiempo": "2:30",
+                "Puntaje": 0
+            })
+        print("Nombre de usuario registrado con éxito.")
+        establecer_nombre_jugador(nombre_usuario)
+        return False, {nombre_usuario: {
+            "Intentos": 3,
+            "Vida": 100,
+            "Escudo": 50,
+            "Proyectil": 0,
+            "Tiempo": "2:30",
+            "Puntaje": 0,
+            "Jugador": nombre_usuario
+        }}

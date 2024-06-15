@@ -17,7 +17,7 @@ instancia_sprite = estado_quieto(), estado_izquierda(), estado_derecha(), estado
 lista_proyectiles = []
 
 class Personaje:
-    def __init__(self, x, y, ancho, alto) -> None:
+    def __init__(self, x, y, ancho=100, alto=100) -> None:
         # Definir una variable para almacenar el tiempo del último ataque
         self.ultimo_ataque_tiempo = datetime.datetime.now()
 
@@ -27,9 +27,8 @@ class Personaje:
         # Composición
         self.rect = pygame.Rect(x, y, ancho, alto)
         self.rect_ataque = pygame.Rect(x, y, ancho, alto)
-
-        self.x = x
-        self.y = y
+        self.rect.x = x 
+        self.rect.y = y 
         self.ancho = ancho
         self.alto = alto
 
@@ -48,12 +47,14 @@ class Personaje:
         self.contador_animacion = 0
         self.tiempo_sprite = 0
         self.velocidad_animacion = 100  # ajusta esto para cambiar la velocidad de la animación
+        self.intervalo_inmunidad = 600 
+        self.grupo_proyectiles = pygame.sprite.Group()
 
         # Velocidades iniciales
         self.velocidad_X = 0
         self.velocidad_Y = 0
-        self.gravedad = -10
-        self.velocidad_salto = 12
+        self.gravedad = -6
+        self.velocidad_salto = 0
 
         # Estados del Personaje
         self.colisionando = True
@@ -67,14 +68,15 @@ class Personaje:
         self.movimiendose_izquierda = False
 
         # Estadísticas
+        self.intentos = 3
         self.vida = 100
+        self.vida_maxima = 100
         self.escudo = 100
-        self.energia = 100
-        self.proyectiles = 3
-        self.daño_ligero = 20
-        self.daño_pesado = 40
-        self.daño_proyectil = 50
+        self.proyectiles = 20
+        self.ultimo_daño_tiempo = 0
+        self.daño_proyectil = 20
 
+#-------------------#### MOVIMIENTO #-------------------####
 
     def movimiento_detener(self):
         self.atacando = False
@@ -110,7 +112,7 @@ class Personaje:
         if self.colisionando_abajo:
             # Iniciar el salto solo si el jugador está en el suelo
             if not self.saltando:
-                self.velocidad_salto = 10
+                self.velocidad_salto = 8  # Ajustar este valor para cambiar la altura del salto
                 self.saltando = True
                 self.colisionando = False
                 self.colisionando_abajo = False
@@ -121,106 +123,207 @@ class Personaje:
 
         if self.saltando:
             # Aplicar la velocidad de salto
-            if self.velocidad_salto >= -10:
+            if self.velocidad_salto >= -2:
                 self.velocidad_Y = - (self.velocidad_salto * abs(self.velocidad_salto) * 0.67)
                 self.velocidad_salto -= 1
             else:
-                self.velocidad_salto = 10
+                self.velocidad_salto = 1
                 self.saltando = False
                 self.colisionando = True
                 self.colisionando_abajo = True
             print(f"ColisionandoPersonaje: ColiAbajo- {self.colisionando_abajo}, Saltando- {self.saltando}")
 
 
-    def disparar_proyectil(self):
-        # Verifica si hay suficientes proyectiles disponibles
-        if self.proyectiles > 0:
-            # Instancia un nuevo proyectil del jugador en la posición del personaje
-            proyectil = ProyectilJugador(self.rect.x, self.rect.y, velocidad_x=5, velocidad_y=0)
-            # Resta uno al contador de proyectiles
-            self.proyectiles -= 1
-            # Agrega el proyectil al grupo de sprites de los proyectiles del jugador
-            # Imprime un mensaje indicando que se agregó el proyectil al grupo de sprites
-            print("¡Disparo de jugador agregado al grupo de proyectiles del jugador!")
-        else:
-            print("¡No hay suficientes proyectiles disponibles!")
-
-        if len(lista_proyectiles) > 0:
-            print("Lista de proyectiles:", lista_proyectiles)
-            print("Número de proyectiles en la lista:", len(lista_proyectiles))
-
-    def provocar_daño_ligero(self):
-        self.atacando = True
-        self.saltando = False
-        self.moviendose_quieto = False
-        self.movimiendose_derecha = False
-        self.movimiendose_izquierda = False
-
-
+#-------------------#### APLICACION #-------------------####
 
     def aplicar_gravedad(self):
         self.velocidad_Y -= self.gravedad
         self.rect.y += self.velocidad_Y
 
-    # def aplicar_colisionar(self, plataformas, enemigos):
-    #     tiempo_actual = datetime.datetime.now()
-    #     colisiones_plataformas = pygame.sprite.spritecollide(self, plataformas, False)
-    #     colisiones_enemigos = pygame.sprite.spritecollide(self, enemigos, False)
-
-    #     # Definir los rectángulos de colisión para diferentes partes del personaje
-    #     top_rect = self.rect.copy()
-    #     top_rect.height = 1
-    #     bottom_rect = self.rect.copy()
-    #     bottom_rect.y += bottom_rect.height
-    #     bottom_rect.height = 1
-    #     left_rect = self.rect.copy()
-    #     left_rect.width = 1
-    #     right_rect = self.rect.copy()
-    #     right_rect.x += right_rect.width
-    #     right_rect.width = 1
-
-    #     for plataforma in plataformas:
-    #         if top_rect.colliderect(plataforma.rect) and self.velocidad_Y < 0:
-    #             # Colisión desde abajo del personaje
-    #             self.velocidad_Y = 0
-    #             self.rect.top = plataforma.rect.bottom
-    #             self.saltando = False
-    #             self.colisionando = True
-
-
-    #         elif bottom_rect.colliderect(plataforma.rect) and self.velocidad_Y >= 0:
-    #             # Colisión desde arriba del personaje
-    #             self.colisionando = True
-    #             self.rect.bottom = plataforma.rect.top
-    #             self.velocidad_Y = -1
-
-    #     ataque_reciente = False
-
-    #     for enemigo in colisiones_enemigos:
-    #         tiempo_transcurrido = tiempo_actual - self.ultimo_ataque_tiempo
-
-    #         # Verificar si ha pasado suficiente tiempo desde el último ataque
-    #         if tiempo_transcurrido.total_seconds() >= self.intervalo_ataque:
-    #             # Realizar el ataque
-    #             # Resto del código para manejar la colisión con el enemigo y realizar el ataque ligero
-    #             self.ultimo_ataque_tiempo = tiempo_actual  # Actualizar el tiempo del último ataque
-                
-    #             # Verificar si ya se ha realizado un ataque recientemente
-    #             if not ataque_reciente:
-    #                 # Llamar a la función ataque_ligero() del enemigo
-    #                 enemigo.ataque_ligero(self)  # Aquí estás pasando el propio personaje como argumento
-
-    #                 ataque_reciente = True
-
-    #                 # Imprimir la vida del personaje después del ataque ligero
-    #                 print("Vida del personaje después del ataque ligero:", self.vida)
-    #                 print("Escudo del personaje después del ataque ligero:", self.escudo)
-
-
     def aplicar_limites(self, limites):
         # Aplicar límites para evitar que el personaje se escape de la ventana
         self.rect.x = max(limites[0], min(self.rect.x, limites[1] - self.rect.width))
         self.rect.y = max(limites[2], min(self.rect.y, limites[3] - self.rect.height))
+
+    def disparar_proyectil(self):
+        # Verifica si hay suficientes proyectiles disponibles
+        if self.proyectiles > 0:
+            # Instancia un nuevo proyectil del jugador en la posición del personaje
+            proyectil = ProyectilJugador(self.rect.centerx, self.rect.centery, velocidad_x=5 if not self.ultimo_movimiento_izquierda else -5, velocidad_y=0)
+            self.grupo_proyectiles.add(proyectil)
+            self.proyectiles -= 1
+            print("¡Disparo de jugador agregado al grupo de proyectiles del jugador!")
+        else:
+            print("¡No hay suficientes proyectiles disponibles!")
+
+    def regresar_al_menu(self, nombre):
+        # Importar la clase del submenu aquí dentro del método jugar
+        from ..Recursos.Dependencias import crear_instancia_de_submenu
+        submenu = crear_instancia_de_submenu(nombre)
+        submenu.run()
+
+    def aplicar_morir(self):
+        if self.vida <= 0:
+            self.intentos -= 1
+            print(f"El personaje ha muerto. Intentos restantes: {self.intentos}")
+            if self.intentos >= 0:
+                self.vida = 100
+                self.escudo = 100
+                self.energia = 100
+                self.rect.x = 10
+                self.rect.y = 650
+                self.velocidad_X = 0
+                self.velocidad_Y = 0
+                self.saltando = False
+                self.colisionando = True
+                self.colisionando_abajo = True
+            else:
+                print("Game Over")
+                from ..Recursos.Dependencias import crear_instancia_de_submenu
+                submenu = crear_instancia_de_submenu(nombre_global= "-Usuario No Registrado-")
+                submenu.run()
+                # funcion()
+
+    def aplicar_daño_enemigo(self, enemigos):
+        for enemigo in enemigos:
+            if self.rect.colliderect(enemigo.rect):
+                if self.rect.bottom > enemigo.rect.top and self.rect.top < enemigo.rect.bottom:
+                    enemigo.vida_enemigo -= 100
+                    print(f"El jugador hizo daño al enemigo. Vida del enemigo: {enemigo.vida_enemigo}")
+
+
+    # def provocar_daño_ligero(self):
+    #     self.atacando = True
+    #     self.saltando = False
+    #     self.moviendose_quieto = False
+    #     self.movimiendose_derecha = False
+    #     self.movimiendose_izquierda = False
+
+#-------------------#### COLISION #-------------------####
+
+
+    def colisionar_horizontal(self, lista_plataforma):
+        # Reiniciar los estados de colisión
+        self.colisionando = False
+
+        # Manejar colisiones horizontales
+        for plataforma in lista_plataforma:
+            if plataforma.rect.colliderect(self.rect):
+                # Colisiones desde la derecha
+                if self.velocidad_X > 0 and self.rect.right + 6 >= plataforma.rect.left:
+                    self.rect.right = plataforma.rect.left
+                    # print("Colisionando derecha")
+                    self.velocidad_X = 0
+                # Colisiones desde la izquierda
+                elif self.velocidad_X < 0 and self.rect.left - 6 <= plataforma.rect.right:
+                    self.rect.left = plataforma.rect.right
+                    # print("Colisionando izquierda")
+                    self.velocidad_X = 0
+                self.colisionando = True
+
+        # Actualizar la posición real del personaje
+        self.rect.x = self.rect.x
+
+    def colisionar_vertical(self, lista_plataforma):
+        # Reiniciar los estados de colisión
+        self.colisionando_abajo = False
+
+        # Manejar colisiones verticales
+        for plataforma in lista_plataforma:
+            if plataforma.rect.colliderect(self.rect):
+                if self.velocidad_Y > 0:  # Moviendo hacia abajo
+                    self.rect.bottom = plataforma.rect.top
+                    self.saltando = False
+                    self.colisionando_abajo = True
+                elif self.velocidad_Y < 0:  # Moviendo hacia arriba
+                    self.rect.top = plataforma.rect.bottom
+                self.velocidad_Y = 0
+                # print("Colisionando arriba o abajo")
+
+        # Actualizar la posición real del personaje
+        self.rect.y = self.rect.y
+
+#-------------------#### COLISION-DAÑO #-------------------####
+
+    def recibir_daño(self, proyectiles, enemigos, trampas):
+            tiempo_actual = pygame.time.get_ticks()
+            if tiempo_actual - self.ultimo_daño_tiempo < self.intervalo_inmunidad:
+                return
+
+            # Verificar colisiones con proyectiles enemigos
+            for proyectil in proyectiles:
+                if self.rect.colliderect(proyectil.rect):
+                    self.aplicar_daño(proyectil.daño)
+                    proyectiles.remove(proyectil)
+                    print(f"Recibió daño de proyectil. Vida: {self.vida}, Escudo: {self.escudo}")
+                    self.ultimo_daño_tiempo = tiempo_actual
+                    break
+
+            # Verificar colisiones con enemigos
+            for enemigo in enemigos:
+                if self.rect.colliderect(enemigo.rect):
+                    # Verificar individualmente cada lado de la colisión
+                    if self.rect.bottom > enemigo.rect.top:  # Colisión desde abajo
+                        self.aplicar_daño(enemigo.daño_ligero_enemigo)  # Aplicar daño lateral
+                        print(f"Recibió daño de enemigo por el lado. Vida: {self.vida}, Escudo: {self.escudo}")
+                        self.ultimo_daño_tiempo = tiempo_actual
+                        break
+                    elif self.rect.top < enemigo.rect.bottom:  # Colisión desde arriba
+                        self.aplicar_daño_enemigo(enemigos)
+                        continue
+                    elif self.rect.right < enemigo.rect.left:  # Colisión desde la izquierda
+                        # Manejar colisión desde la izquierda
+                        self.aplicar_daño(enemigo.daño_ligero_enemigo)
+                        print(f"Recibió daño de enemigo por el lado izquierdo. Vida: {self.vida}, Escudo: {self.escudo}")
+                        self.ultimo_daño_tiempo = tiempo_actual
+                        break
+                    elif self.rect.left > enemigo.rect.right:  # Colisión desde la derecha
+                        # Manejar colisión desde la derecha
+                        self.aplicar_daño(enemigo.daño_ligero_enemigo)
+                        print(f"Recibió daño de enemigo por el lado derecho. Vida: {self.vida}, Escudo: {self.escudo}")
+                        self.ultimo_daño_tiempo = tiempo_actual
+                        break
+
+            # Verificar colisiones con trampas
+            for trampa in trampas:
+                if self.rect.colliderect(trampa.rect):
+                    self.aplicar_daño(trampa.daño)
+                    print(f"Recibió daño de trampa. Vida: {self.vida}, Escudo: {self.escudo}")
+                    self.ultimo_daño_tiempo = tiempo_actual
+                    break
+
+
+
+    def provocar_darño(self, objetivo, lista_proyectiles):
+            
+            for proyectil in lista_proyectiles:
+                if proyectil.rect.colliderect(objetivo.rect):
+                    if self.velocidad_X > 0:
+                        # El enemigo se mueve hacia la derecha, el proyectil lo golpea desde la izquierda
+                        proyectil.rect.right = objetivo.rect.left
+                        objetivo.vida_enemigo -= 100
+                    elif self.velocidad_X < 0:
+                        # El enemigo se mueve hacia la izquierda, el proyectil lo golpea desde la derecha
+                        proyectil.rect.left = objetivo.rect.right
+                        objetivo.vida_enemigo -= 100
+
+                    # Reducir la vida del enemigo por el impacto del proyectil
+                    print(f"El jugador hizo daño al enemigo. Vida del enemigo: {self.vida_enemigo}")
+
+    def aplicar_daño(self, daño):
+        if self.escudo > 0:
+            self.escudo -= daño
+            if self.escudo < 0:
+                self.vida += self.escudo  # Si el escudo es negativo, se resta de la vida
+                self.escudo = 0
+        else:
+            self.vida -= daño
+
+        # Asegurarse de que los valores no sean negativos
+        self.vida = max(self.vida, 0)
+        self.escudo = max(self.escudo, 0)
+
+#-------------------#### ACTUALIZACION #-------------------####
 
     def actualizar_area_ataque(self):
         # Ajusta la posición y el tamaño del área de ataque según el estado del personaje
@@ -237,13 +340,24 @@ class Personaje:
             self.rect_ataque.y = self.rect.y
             self.rect_ataque.height = self.rect.height
 
-    def actualizar_personaje(self, limites=None):
+    def actualizar_personaje(self, lista_plataformas, lista_proyectiles, lista_enemigos, lista_trampas, limites=None):
         # Actualizar el área de ataque
+        # self.recibir_daño(lista_proyectiles, lista_enemigos, lista_trampas)
         self.actualizar_area_ataque()
 
-        # Actualizar la posición del personaje según la velocidad
         self.rect.x += self.velocidad_X
+        self.colisionar_horizontal(lista_plataformas)  # Colisiones horizontales
+
+        self.rect.y += self.velocidad_Y
         self.aplicar_gravedad()
+        self.colisionar_vertical(lista_plataformas)  # Colisiones verticales
+
+        self.recibir_daño(lista_proyectiles, lista_enemigos, lista_trampas)
+        self.provocar_darño(lista_enemigos, lista_proyectiles)
+        self.aplicar_daño_enemigo(lista_enemigos)
+
+        # self.aplicar_morir(funcion=self.regresar_al_menu(nombre="-Usuario No Registrado-"))
+        self.aplicar_morir()
 
         # Obtener las animaciones correspondientes al estado del personaje
         if self.moviendose_quieto:
@@ -254,39 +368,36 @@ class Personaje:
             animaciones = self.sprites_derecha
         elif self.movimiendose_izquierda:
             animaciones = self.sprites_izquierda
-        elif self.provocar_daño_ligero:
-            animaciones = self.sprites_ataque_der if not self.ultimo_movimiento_izquierda else self.sprites_ataque_izq
+        # elif self.provocar_daño_ligero:
+        #     animaciones = self.sprites_ataque_der if not self.ultimo_movimiento_izquierda else self.sprites_ataque_izq
         else:
             animaciones = [self.imagen]  # Lista con una sola imagen por defecto
 
-        # Actualizar índice de sprite y obtener el sprite actual
+        # actualizo indice
         self.contador_animacion += 1
         if self.contador_animacion >= VELOCIDAD_ANIMACION:
             self.contador_animacion = 0
             self.indice_animacion += 1
 
-            # Asegurarse de no exceder los límites de la lista de animaciones
+            # no exederme con los límites de la lista de animaciones
             if self.indice_animacion >= len(animaciones):
                 self.indice_animacion = 0
 
-            # Asignar la imagen actual del sprite al personaje
             self.imagen = animaciones[self.indice_animacion]
 
-
-        # Aplicar límites si se proporcionan
         if limites:
             self.aplicar_limites(limites)
 
+        self.grupo_proyectiles.update()
 
-    def dibujar_en_pantalla(self, pantalla, offset_x=0):
-        padding = 0
-        # Dibuja al personaje en la pantalla
-        pygame.draw.rect(pantalla, (0, 0, 0), (self.rect.x + offset_x - padding, self.rect.y - padding, self.rect.width + padding * 2, self.rect.height + padding * 2), 2)
-        pantalla.blit(self.imagen, (self.rect.x + offset_x, self.rect.y)) 
-
-        # Dibujar el área de ataque en la pantalla
+    def dibujar_en_pantalla(self, pantalla):
+        pygame.draw.rect(pantalla, (0, 0, 0), self.rect, 2)
+        pantalla.blit(self.imagen, self.rect)
         pygame.draw.rect(pantalla, (255, 0, 0), self.rect_ataque)
 
+        # Dibujar proyectiles
+        for proyectil in self.grupo_proyectiles:
+            proyectil.dibujar(pantalla)
 
     def get_posicion_x(self):
         return self.rect.x
