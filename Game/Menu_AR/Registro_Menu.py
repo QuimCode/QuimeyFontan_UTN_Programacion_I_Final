@@ -11,7 +11,7 @@ class SubmenuRegistro:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 40)
 
-        self.fondo_menu = pygame.image.load("Game\Recursos\Mapas_Fondos\Menu\castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
+        self.fondo_menu = pygame.image.load("Game/Recursos/Mapas_Fondos/Menu/castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
 
         self.nombre = ""
         self.fecha = ""

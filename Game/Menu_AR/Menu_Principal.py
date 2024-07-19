@@ -13,10 +13,10 @@ class Menu:
         self.font = pygame.font.Font(None, 40)
 
         # Cargar la imagen del fondo del menú
-        self.fondo_menu = pygame.image.load("Game\Recursos\Mapas_Fondos\Menu\castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
+        self.fondo_menu = pygame.image.load("Game/Recursos/Mapas_Fondos/Menu/castle-medieval-pixel-art-pixelated-field-2254356.jpg").convert()
         self.fondo_menu = pygame.transform.scale(self.fondo_menu, (ANCHO_MENU, ALTO_MENU))
-        self.icono_mute = pygame.image.load("Game\Recursos\Iconos\icons8-sin-audio-80.png").convert_alpha()
-        # pygame.mixer.music.load("Game\\Recursos\\Musica\\bit-fantasy-rpg-adventure-music-1.mp3") -------------------------        MUSICA ------------------------------------
+        self.icono_mute = pygame.image.load("Game/Recursos/Iconos/icons8-sin-audio-80.png").convert_alpha()
+        # pygame.mixer.music.load("Game//Recursos//Musica//bit-fantasy-rpg-adventure-music-1.mp3") -------------------------        MUSICA ------------------------------------
         self.sonido_activado = True
 
         self.nombre_capturado = nombre
