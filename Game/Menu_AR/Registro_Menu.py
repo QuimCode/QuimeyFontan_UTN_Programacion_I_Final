@@ -1,7 +1,8 @@
 import pygame
 
 from .Recursos_Menu import Boton
-from ..Parametros import *
+from ..Recursos.Parametros import *
+
 
 class SubmenuRegistro:
     def __init__(self):

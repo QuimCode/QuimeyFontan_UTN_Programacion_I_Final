@@ -4,7 +4,7 @@ import pygame
 
 ##--------------------------------##
 
-from Game.Parametros import *
+from ..Recursos.Parametros import *
 # from ..Recursos.Sprites.Sprites import *
 from ..Recursos.Sprites.Sprites import *
 from ..Recursos.Proyectiles.Proyectil import ProyectilJugador
@@ -12,12 +12,13 @@ import datetime
 
 
 ##--------------------------------##
-
+archivo_csv = 'datos_jugadores.csv'
+ultimo_nombre = obtener_ultimo_nombre_usuario(archivo_csv)
 instancia_sprite = estado_quieto(), estado_izquierda(), estado_derecha(), estado_saltando()
 lista_proyectiles = []
 
 class Personaje:
-    def __init__(self, x, y, ancho=100, alto=100) -> None:
+    def __init__(self, x, y, nombre= ultimo_nombre, intentos=3, vida=100, escudo=50, proyectiles=0, puntaje=0, ancho=100, alto=100) -> None:
         # Definir una variable para almacenar el tiempo del último ataque
         self.ultimo_ataque_tiempo = datetime.datetime.now()
 
@@ -46,7 +47,7 @@ class Personaje:
         self.indice_animacion = 0
         self.contador_animacion = 0
         self.tiempo_sprite = 0
-        self.velocidad_animacion = 100  # ajusta esto para cambiar la velocidad de la animación
+        # self.velocidad_animacion = 100  # ajusta esto para cambiar la velocidad de la animación
         self.intervalo_inmunidad = 600 
         self.grupo_proyectiles = pygame.sprite.Group()
 
@@ -68,11 +69,20 @@ class Personaje:
         self.movimiendose_izquierda = False
 
         # Estadísticas
-        self.intentos = 3
-        self.vida = 100
-        self.vida_maxima = 100
-        self.escudo = 100
-        self.proyectiles = 20
+        # self.intentos = 3
+        # self.vida = 100
+        # self.vida_maxima = 100
+        # self.escudo = 100
+        # self.proyectiles = 20
+        # self.ultimo_daño_tiempo = 0
+        # self.daño_proyectil = 20
+        self.nombre = nombre
+        self.intentos = intentos
+        self.vida = vida
+        self.vida_maxima = vida
+        self.escudo = escudo
+        self.proyectiles = proyectiles
+        self.puntaje = puntaje
         self.ultimo_daño_tiempo = 0
         self.daño_proyectil = 20
 
@@ -338,6 +348,13 @@ class Personaje:
             # Ajusta la posición vertical y el tamaño del área de ataque según sea necesario
             self.rect_ataque.y = self.rect.y
             self.rect_ataque.height = self.rect.height
+    
+    def actualizar_estadisticas(self, intentos, vida, escudo, proyectiles, puntaje):
+        self.intentos = intentos
+        self.vida = vida
+        self.escudo = escudo
+        self.proyectiles = proyectiles
+        self.puntaje = puntaje
 
     def actualizar_personaje(self, lista_plataformas, lista_proyectiles, lista_enemigos, lista_trampas, limites=None):
         # Actualizar el área de ataque

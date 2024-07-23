@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-from ..Parametros import *
+from ..Recursos.Parametros import *
 from .Recursos_Menu import Boton, BotonIcono
 
 class Menu:

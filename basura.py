@@ -285,3 +285,43 @@
 #             "Puntaje": 0,
 #             "Jugador": nombre_usuario
 #         }}
+
+
+
+
+# def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
+#     usuarios_existentes = leer_datos_csv(archivo_csv)
+
+#     if nombre_usuario in usuarios_existentes:
+#         print("El nombre de usuario ya está registrado.")
+#         establecer_nombre_jugador(nombre_usuario)
+#         return True, usuarios_existentes
+#     else:
+#         usuarios_existentes[nombre_usuario] = {
+#             "Intentos": 0,
+#             "Vida": 0,
+#             "Escudo": 0,
+#             "Proyectiles": 0,
+#             "Tiempo": "2:30",
+#             "Puntaje": 0,
+#             "Jugador": nombre_usuario
+#         }
+#         escribir_datos_csv(archivo_csv, usuarios_existentes)
+#         print("Nombre de usuario registrado con éxito.")
+#         establecer_nombre_jugador(nombre_usuario)
+#         return False, usuarios_existentes
+
+# def guardar_estadisticas_al_final_del_nivel(nombre_usuario, archivo_csv, intentos, vida, escudo, proyectiles, puntaje):
+#     # Leer los datos existentes
+#     datos = leer_datos_csv(archivo_csv)
+
+#     # Actualizar las estadísticas del usuario
+#     if nombre_usuario in datos:
+#         datos[nombre_usuario]["Intentos"] = intentos
+#         datos[nombre_usuario]["Vida"] = vida
+#         datos[nombre_usuario]["Escudo"] = escudo
+#         datos[nombre_usuario]["Proyectiles"] = proyectiles
+#         datos[nombre_usuario]["Puntaje"] = puntaje
+
+#     # Escribir los datos actualizados de vuelta en el archivo CSV
+#     escribir_datos_csv(archivo_csv, datos)

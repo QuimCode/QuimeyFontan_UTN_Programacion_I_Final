@@ -6,7 +6,7 @@ import sys
 ##-------------ARCHIVOS-------------##
 
 from .Class_Nivel import *
-from Game.Parametros import *
+from Game.Recursos.Parametros import *
 from ..Personajes.Personaje import *
 
 ##---------------------------------##
@@ -28,13 +28,6 @@ class Nivel1(Nivel):
     def dibujar_nivel1(self):
         super().dibujar_nivel()
 
-    def finalizar_nivel(self):
-        nombre_usuario = nombre_jugador_global  # Aquí debes obtener el nombre del jugador real
-        archivo_csv = "datos_jugadores.csv"  # Ruta al archivo CSV
-        estadisticas = self.obtener_estadisticas()
-        guardar_estadisticas_al_final_del_nivel(nombre_usuario== nombre_jugador_global, archivo_csv, 
-            estadisticas["Intentos"], estadisticas["Vida"], estadisticas["Escudo"], estadisticas["Proyectil"], estadisticas["Puntaje"])
-        print("Estadísticas guardadas al final del nivel")
 
     def bucle_principal_nivel1(self):
         while True:

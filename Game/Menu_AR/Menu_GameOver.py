@@ -2,7 +2,7 @@ import pygame
 import sys
 import csv
 
-from ..Parametros import *
+from ..Recursos.Parametros import *
 from .Recursos_Menu import Boton
 
 class GameOver:

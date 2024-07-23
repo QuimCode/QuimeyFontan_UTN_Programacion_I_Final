@@ -4,7 +4,7 @@ from .Recursos_Menu import Boton,BotonIcono
 from ..Niveles.Class_Nivel1 import Nivel1
 from ..Niveles.Class_Nivel2 import Nivel2
 from ..Niveles.Class_Nivel3 import Nivel3
-from ..Parametros import *
+from ..Recursos.Parametros import *
 
 class Submenu:
     def __init__(self, nombre):

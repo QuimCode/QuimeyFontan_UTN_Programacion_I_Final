@@ -1,6 +1,6 @@
 import pygame
 
-from ..Parametros import *
+from ..Recursos.Parametros import *
 
 nombre_global = "-No Registrado-"
 

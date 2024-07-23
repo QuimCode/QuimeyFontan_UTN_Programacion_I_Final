@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from Game.Parametros import *
+from Game.Recursos.Parametros import *
 from ..Sprites.TrampaSprites import estado_ataque
 
 

@@ -6,7 +6,7 @@ import sys
 ##-------------ARCHIVOS-------------##
 
 from .Class_Nivel import *
-from Game.Parametros import *
+from Game.Recursos.Parametros import *
 from ..Personajes.Personaje import *
 
 

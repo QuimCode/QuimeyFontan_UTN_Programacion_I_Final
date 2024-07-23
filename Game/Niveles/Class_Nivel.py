@@ -7,7 +7,7 @@ from os.path import isfile, join
 
 ##-------------ARCHIVOS-------------##
 
-from Game.Parametros import *
+from Game.Recursos.Parametros import *
 from ..Personajes.Personaje import Personaje, lista_proyectiles
 from ..Personajes.Enemigo import Enemigo, EnemigoVolador, EnemigoMago
 from ..Recursos.Sprites.Sprites import *
@@ -121,6 +121,7 @@ class Nivel:
             "Proyectil": (800, 50),
             "Tiempo": (1000, 50),
             "Puntaje": (1200, 50),
+            "Nombre" : (1400, 50),
         }
 
         minutos = self.tiempo_restante // 60
@@ -134,6 +135,7 @@ class Nivel:
             "Proyectil": f"Proyectil: {self.jugador.proyectiles}",
             "Tiempo": tiempo_formateado,
             "Puntaje": f"Puntaje: {self.puntaje}",
+            "Nombre": f"Nombre: {self.jugador.nombre}",
         }
 
         for texto, posicion in texto_posiciones.items():
@@ -155,6 +157,7 @@ class Nivel:
         }
 
 #=================== MANEJAR TIEMPO ===================#
+
     def actualizar_tiempo(self):
         tiempo_actual = pygame.time.get_ticks()
         if tiempo_actual - self.tiempo_anterior >= 1000:  # 1000 milisegundos = 1 segundo
@@ -176,6 +179,10 @@ class Nivel:
         self.jugador.rect.y = 650
         self.tiempo_restante = 170  # Reiniciar el tiempo del nivel
 
+    def finalizar_nivel(self):
+        archivo_csv = "datos_jugadores.csv"
+        guardar_estadisticas_al_final_del_nivel(self.jugador, archivo_csv)  # Asume que self.jugador es una instancia de Personaje
+        print("Estadísticas guardadas al final del nivel")
 
     def dibujar_nivel(self):
         self.ventana.fill(NEGRO)
@@ -200,8 +207,6 @@ class Nivel:
 
         for proyectil in self.grupo_proyectiles_jugador:
             proyectil.dibujar(self.ventana)
-
-
 
 
     def actualizar_nivel(self):

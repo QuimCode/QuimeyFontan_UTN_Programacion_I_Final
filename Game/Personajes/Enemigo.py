@@ -5,7 +5,7 @@ from ..Recursos.Sprites.Enemy_Sprites import *
 from ..Recursos.Sprites.EneVoladorSpri import *
 from ..Recursos.Sprites.EneMagoSpri import *
 
-from Game.Parametros import *
+from Game.Recursos.Parametros import *
 from ..Recursos.Sprites.Sprites import *
 
 lista_proyectiles = []
@@ -97,7 +97,7 @@ class Enemigo(pygame.sprite.Sprite):
                 elif self.velocidad_Y < 0:  # Moviendo hacia arriba
                     self.rect.top = plataforma.rect.bottom
                 self.velocidad_Y = 0
-                print("Colisionando arriba o abajo")
+                # print("Colisionando arriba o abajo")
 
         # Actualizar la posición real del personaje
         self.rect.y = self.rect.y
