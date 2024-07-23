@@ -1,8 +1,3 @@
-Jugador,Intentos,Vida,Escudo,Proyectil,Tiempo,Puntaje
-X_Quimey,3,100,50,0,2:30,0
-X_Huilen,3,100,50,0,2:30,0
-X_Thaiel,3,100,50,0,2:30,0
-LoL,3,100,50,0,2:30,0
-X_LoL,3,100,50,0,2:30,0
-SsS,3,100,50,0,2:30,0
-Lalo,3,100,50,0,2:30,0
+Jugador,Intentos,Vida,Escudo,Proyectiles,Tiempo,Puntaje
+Prueba1,0,0,0,0,2:30,0
+Prueba2,0,0,0,0,2:30,0

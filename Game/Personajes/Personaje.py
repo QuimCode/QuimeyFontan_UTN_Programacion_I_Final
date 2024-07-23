@@ -131,7 +131,7 @@ class Personaje:
                 self.saltando = False
                 self.colisionando = True
                 self.colisionando_abajo = True
-            print(f"ColisionandoPersonaje: ColiAbajo- {self.colisionando_abajo}, Saltando- {self.saltando}")
+            print(f"Colisionando Personaje: Colision desde abajo- {self.colisionando_abajo}, Saltando- {self.saltando}")
 
 
 #-------------------#### APLICACION #-------------------####
@@ -145,6 +145,13 @@ class Personaje:
         self.rect.x = max(limites[0], min(self.rect.x, limites[1] - self.rect.width))
         self.rect.y = max(limites[2], min(self.rect.y, limites[3] - self.rect.height))
 
+    def aplicar_daño_enemigo(self, enemigos):
+        for enemigo in enemigos:
+            if self.rect.colliderect(enemigo.rect):
+                if self.rect.bottom > enemigo.rect.top and self.rect.top < enemigo.rect.bottom:
+                    enemigo.vida_enemigo -= 100
+                    print(f"El jugador hizo daño al enemigo. Vida del enemigo: {enemigo.vida_enemigo}")
+
     def disparar_proyectil(self):
         # Verifica si hay suficientes proyectiles disponibles
         if self.proyectiles > 0:
@@ -156,17 +163,11 @@ class Personaje:
         else:
             print("¡No hay suficientes proyectiles disponibles!")
 
-    def regresar_al_menu(self, nombre):
-        # Importar la clase del submenu aquí dentro del método jugar
-        from ..Recursos.Dependencias import crear_instancia_de_submenu
-        submenu = crear_instancia_de_submenu(nombre)
-        submenu.run()
-
     def aplicar_morir(self):
         if self.vida <= 0:
             self.intentos -= 1
             print(f"El personaje ha muerto. Intentos restantes: {self.intentos}")
-            if self.intentos >= 0:
+            if self.intentos > 0:
                 self.vida = 100
                 self.escudo = 100
                 self.energia = 100
@@ -179,18 +180,16 @@ class Personaje:
                 self.colisionando_abajo = True
             else:
                 print("Game Over")
-                from ..Recursos.Dependencias import crear_instancia_de_submenu
-                submenu = crear_instancia_de_submenu(nombre_global= "-Usuario No Registrado-")
-                submenu.run()
+                from ..Recursos.Dependencias import crear_instancia_de_gameover
+                gameOverMenu = crear_instancia_de_gameover()
+                gameOverMenu.run()
                 # funcion()
 
-    def aplicar_daño_enemigo(self, enemigos):
-        for enemigo in enemigos:
-            if self.rect.colliderect(enemigo.rect):
-                if self.rect.bottom > enemigo.rect.top and self.rect.top < enemigo.rect.bottom:
-                    enemigo.vida_enemigo -= 100
-                    print(f"El jugador hizo daño al enemigo. Vida del enemigo: {enemigo.vida_enemigo}")
-
+    def regresar_al_menu(self, nombre):
+        # Importar la clase del submenu aquí dentro del método jugar
+        from ..Recursos.Dependencias import crear_instancia_de_submenu
+        submenu = crear_instancia_de_submenu(nombre)
+        submenu.run()
 
     # def provocar_daño_ligero(self):
     #     self.atacando = True
@@ -294,7 +293,7 @@ class Personaje:
 
 
 
-    def provocar_darño(self, objetivo, lista_proyectiles):
+    def provocar_daño(self, objetivo, lista_proyectiles):
             
             for proyectil in lista_proyectiles:
                 if proyectil.rect.colliderect(objetivo.rect):
@@ -353,7 +352,7 @@ class Personaje:
         self.colisionar_vertical(lista_plataformas)  # Colisiones verticales
 
         self.recibir_daño(lista_proyectiles, lista_enemigos, lista_trampas)
-        self.provocar_darño(lista_enemigos, lista_proyectiles)
+        self.provocar_daño(lista_enemigos, lista_proyectiles)
         self.aplicar_daño_enemigo(lista_enemigos)
 
         # self.aplicar_morir(funcion=self.regresar_al_menu(nombre="-Usuario No Registrado-"))

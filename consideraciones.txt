@@ -11,4 +11,4 @@ Algunos de los archivos donde se modificaron los archivos por esto fuero:
 -Enemy_Sprites.py
 -TrampaSprites.py
 -Sprites.py
-
+-Class_Nivel (Direccion de fondos del nivel)

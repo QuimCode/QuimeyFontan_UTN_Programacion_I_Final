@@ -45,7 +45,6 @@ class Nivel:
         for enemigo in enemigos_nivel.get(numero, []):
             self.enemigos.add(enemigo)  # cada enemigo individualmente
         
-
         #Plataformas - Grupo
         self.plataformas = pygame.sprite.Group()
         self.plataformas.add(plataformas_nivel[numero])
@@ -99,9 +98,7 @@ class Nivel:
                     if not self.jugador.atacando:
                         self.jugador.disparar_proyectil()
                 elif event.key == pygame.K_k:
-                    if self.jugador.movimiendose_derecha or self.jugador.movimiendose_izquierda:
-                        self.jugador.movimiento_detener()
-                    self.jugador.provocar_daño_ligero()
+                    self.jugador.recibir_daño
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a or event.key == pygame.K_d:
                     self.jugador.movimiento_detener()
@@ -147,6 +144,15 @@ class Nivel:
         if len(lista_proyectiles) > 0:
             print("Lista de proyectiles Nivel:", lista_proyectiles)
             print("Número de proyectiles en la lista Nivel:", len(lista_proyectiles))
+
+    def obtener_estadisticas(self):
+        return {
+            "Intentos": self.jugador.intentos,
+            "Vida": self.jugador.vida,
+            "Escudo": self.jugador.escudo,
+            "Proyectil": self.jugador.proyectiles,
+            "Puntaje": self.puntaje,
+        }
 
 #=================== MANEJAR TIEMPO ===================#
     def actualizar_tiempo(self):
@@ -230,9 +236,9 @@ class Nivel:
 #-------------LISTA/DICCIONARIO PLATAFORMAS-------------#
 
 plataformas_nivel = {
-    1: [ PlataformaBase(0, 1040, 1920, 30, ROJO)],
+    1: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
     2: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
-    3:  [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
+    3: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
 }
 
 # Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL)
@@ -250,9 +256,9 @@ enemigos_nivel = {
 }
 
 fondos_nivel = {
-    1: "Game\Recursos\Mapas_Fondos\Free Pixel Art Forest\Preview\Back1920.png",
-    2: "Game\Recursos\Mapas_Fondos\Free Pixel Art Hill\PREVIEWS\Hills1920.png",
-    3: "Game\Recursos\Mapas_Fondos\Glacial-mountains-parallax-background_vnitti\HillsFrozen1920.png"
+    1: "Game/Recursos/Mapas_Fondos/Free Pixel Art Forest/Preview/Back1920.png",
+    2: "Game/Recursos/Mapas_Fondos/Free Pixel Art Hill/PREVIEWS/Hills1920.png",
+    3: "Game/Recursos/Mapas_Fondos/Glacial-mountains-parallax-background_vnitti/HillsFrozen1920.png"
 }
 
 

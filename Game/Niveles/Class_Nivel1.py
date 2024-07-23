@@ -28,6 +28,14 @@ class Nivel1(Nivel):
     def dibujar_nivel1(self):
         super().dibujar_nivel()
 
+    def finalizar_nivel(self):
+        nombre_usuario = nombre_jugador_global  # Aquí debes obtener el nombre del jugador real
+        archivo_csv = "datos_jugadores.csv"  # Ruta al archivo CSV
+        estadisticas = self.obtener_estadisticas()
+        guardar_estadisticas_al_final_del_nivel(nombre_usuario== nombre_jugador_global, archivo_csv, 
+            estadisticas["Intentos"], estadisticas["Vida"], estadisticas["Escudo"], estadisticas["Proyectil"], estadisticas["Puntaje"])
+        print("Estadísticas guardadas al final del nivel")
+
     def bucle_principal_nivel1(self):
         while True:
             self.manejador_eventos_nivel1()
@@ -35,6 +43,7 @@ class Nivel1(Nivel):
             self.dibujar_nivel1()
 
             if self.verificar_transicion():
+                self.finalizar_nivel()
                 print("Transición al siguiente nivel")
                 return 2  # Indicamos que debe pasar al nivel 2
 
