@@ -1,7 +1,6 @@
 ##-------------MODULOS-------------##
 
 import pygame
-import sys
 
 ##-------------ARCHIVOS-------------##
 

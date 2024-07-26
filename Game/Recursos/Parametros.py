@@ -129,15 +129,15 @@ def guardar_estadisticas_al_final_del_nivel(personaje, archivo_csv):
         print("Error: El nombre del personaje está vacío.")
 
 
-def cargar_estadisticas_para_nuevo_nivel(nombre_usuario, archivo_csv):
-    # Leer los datos existentes
-    datos = leer_datos_csv(archivo_csv)
+# def cargar_estadisticas_para_nuevo_nivel(nombre_usuario, archivo_csv):
+#     # Leer los datos existentes
+#     datos = leer_datos_csv(archivo_csv)
 
-    # Retornar las estadísticas del usuario
-    if nombre_usuario in datos:
-        return datos[nombre_usuario]
-    else:
-        return None
+#     # Retornar las estadísticas del usuario
+#     if nombre_usuario in datos:
+#         return datos[nombre_usuario]
+#     else:
+#         return None
 
 
 #===================================LECTURA Y GUARDADO DE GAME OVER ==============================================#
