@@ -5,11 +5,11 @@ import csv
 from ..Recursos.Parametros import *
 from .Recursos_Menu import Boton
 
-class GameOver:
+class JuegoGanado:
     def __init__(self, nombre_usuario):
         pygame.init()
         self.screen = pygame.display.set_mode((ANCHO_MENU, ALTO_MENU))
-        pygame.display.set_caption("Juego Perdido")
+        pygame.display.set_caption("Juego Ganado")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 40)
         self.nombre_usuario = nombre_usuario
@@ -41,7 +41,7 @@ class GameOver:
                 boton.update(self.screen)
 
             # Mostrar el texto "Game Over" en el centro de la pantalla
-            texto_game_over = self.font.render("Game Over", True, BLANCO)
+            texto_game_over = self.font.render("Juego Ganado", True, BLANCO)
             self.screen.blit(texto_game_over, (ANCHO_MENU/2 - texto_game_over.get_width()/2, ALTO_MENU/2 - 150))
 
             pygame.display.flip()

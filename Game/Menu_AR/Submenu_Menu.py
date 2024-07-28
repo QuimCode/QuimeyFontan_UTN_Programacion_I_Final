@@ -85,14 +85,14 @@ class Submenu:
 
     def jugar_nivel_1(self):
         if self.nombre_usuario:
-            Nivel1.ejecutar_nivel1()
+            Nivel1.ejecutar_nivel1(self.nombre_usuario)
             print("Iniciar nivel 1...")
         else:
             print("Por favor, registra un usuario antes de jugar.")
 
     def jugar_nivel_2(self):
         if self.nombre_usuario:
-            Nivel2.ejecutar_nivel2()
+            Nivel2.ejecutar_nivel2(self.nombre_usuario)
             print("Iniciar nivel 2...")
         else:
             print("Por favor, registra un usuario antes de jugar.")
@@ -100,7 +100,7 @@ class Submenu:
     def jugar_nivel_3(self):
         # if not self.nombre_usuario == "-Usuario No Registrado-":
         if self.nombre_usuario:
-            Nivel3.ejecutar_nivel3()
+            Nivel3.ejecutar_nivel3(self.nombre_usuario)
             print("Iniciar nivel 3...")
         else:
             print("Por favor, registra un usuario antes de jugar.")

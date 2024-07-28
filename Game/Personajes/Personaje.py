@@ -13,12 +13,18 @@ import datetime
 
 ##--------------------------------##
 archivo_csv = 'datos_jugadores.csv'
-ultimo_nombre = obtener_ultimo_nombre_usuario(archivo_csv)
+# ultimo_nombre = obtener_ultimo_nombre_usuario(archivo_csv)
 instancia_sprite = estado_quieto(), estado_izquierda(), estado_derecha(), estado_saltando()
 lista_proyectiles = []
 
 class Personaje:
-    def __init__(self, x, y, nombre= ultimo_nombre, intentos=3, vida=100, escudo=50, proyectiles=0, puntaje=0, ancho=100, alto=100) -> None:
+    def __init__(self, x, y, nombre=None, intentos=3, vida=100, escudo=50, proyectiles=10, tiempo=0, puntaje=0, ancho=100, alto=100):
+        if nombre is None:
+            self.nombre = obtener_ultimo_nombre_usuario(archivo_csv)
+            print(f"Nombre al crear Personaje: {self.nombre}")
+        else:
+            self.nombre = nombre
+
         # Definir una variable para almacenar el tiempo del último ataque
         self.ultimo_ataque_tiempo = datetime.datetime.now()
 
@@ -68,14 +74,7 @@ class Personaje:
         self.movimidose_derecha = False
         self.movimiendose_izquierda = False
 
-        # Estadísticas
-        # self.intentos = 3
-        # self.vida = 100
-        # self.vida_maxima = 100
-        # self.escudo = 100
-        # self.proyectiles = 20
-        # self.ultimo_daño_tiempo = 0
-        # self.daño_proyectil = 20
+
         self.nombre = nombre
         self.intentos = intentos
         self.vida = vida
@@ -83,6 +82,7 @@ class Personaje:
         self.escudo = escudo
         self.proyectiles = proyectiles
         self.puntaje = puntaje
+        self.tiempo = tiempo
         self.ultimo_daño_tiempo = 0
         self.daño_proyectil = 20
 
@@ -349,12 +349,14 @@ class Personaje:
             self.rect_ataque.y = self.rect.y
             self.rect_ataque.height = self.rect.height
     
-    def actualizar_estadisticas(self, intentos, vida, escudo, proyectiles, puntaje):
-        self.intentos = intentos
-        self.vida = vida
-        self.escudo = escudo
-        self.proyectiles = proyectiles
-        self.puntaje = puntaje
+    def cargar_progreso(self, datos):
+        if datos:
+            self.intentos = int(datos['Intentos'])
+            self.vida = int(datos['Vida'])
+            self.escudo = int(datos['Escudo'])
+            self.proyectiles = int(datos['Proyectiles'])
+            self.tiempo = int(datos['Tiempo'])
+            self.puntaje = int(datos['Puntaje'])
 
     def actualizar_personaje(self, lista_plataformas, lista_proyectiles, lista_enemigos, lista_trampas, limites=None):
         # Actualizar el área de ataque

@@ -46,6 +46,14 @@ def escribir_datos_csv(archivo_csv, datos):
         escritor_csv.writeheader()
         escritor_csv.writerows(datos.values())
 
+def append_datos_csv(archivo_csv, datos):
+    fieldnames = ["Nombre", "Intentos", "Vida", "Escudo", "Proyectiles", "Tiempo", "Puntaje"]
+    with open(archivo_csv, mode='a', newline='') as archivo:
+        escritor_csv = csv.DictWriter(archivo, fieldnames=fieldnames)
+        if archivo.tell() == 0:
+            escritor_csv.writeheader()
+        escritor_csv.writerow(datos)
+
 def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
     usuarios_existentes = leer_datos_csv(archivo_csv)
     nombre_duplicado = nombre_usuario in usuarios_existentes
@@ -53,12 +61,12 @@ def crear_verificar_nombre_usuario(nombre_usuario, archivo_csv):
     if not nombre_duplicado:
         usuarios_existentes[nombre_usuario] = {
             "Nombre": nombre_usuario,
-            "Intentos": 0,
-            "Vida": 0,
-            "Escudo": 0,
-            "Proyectiles": 0,
-            "Tiempo": 0,
-            "Puntaje": 0
+            "Intentos": None,
+            "Vida": None,
+            "Escudo": None,
+            "Proyectiles": None,
+            "Tiempo": None,
+            "Puntaje": None,
         }
         escribir_datos_csv(archivo_csv, usuarios_existentes)
 
@@ -80,64 +88,38 @@ def obtener_ultimo_nombre_usuario(archivo_csv):
         print(f"Error: El archivo {archivo_csv} no existe.")
     return ultimo_nombre
 
-def actualizar_estadisticas(nombre_usuario, archivo_csv, intentos, vida, escudo, proyectiles, tiempo, puntaje):
-    usuarios_existentes = leer_datos_csv(archivo_csv)
 
-    if nombre_usuario in usuarios_existentes:
-        usuarios_existentes[nombre_usuario].update({
-            "Intentos": intentos,
-            "Vida": vida,
-            "Escudo": escudo,
-            "Proyectiles": proyectiles,
-            "Tiempo": tiempo,
-            "Puntaje": puntaje
-        })
-        escribir_datos_csv(archivo_csv, usuarios_existentes)
-    else:
-        print(f"Error: el usuario {nombre_usuario} no existe en el archivo CSV.")
 
 #===================================LECTURA Y GUARDADO DE NIVEL ==============================================#
 
-def guardar_estadisticas_al_final_del_nivel(personaje, archivo_csv):
-    usuarios_existentes = leer_datos_csv(archivo_csv)
-    
+def guardar_estadisticas_al_final_del_nivel(personaje, nivel, archivo_csv):
     if personaje.nombre:
-        # Verificar si el nombre del personaje ya existe en el diccionario
-        if personaje.nombre in usuarios_existentes:
-            # Actualizar los datos del personaje existente
-            usuarios_existentes[personaje.nombre].update({
-                "Intentos": personaje.intentos,
-                "Vida": personaje.vida,
-                "Escudo": personaje.escudo,
-                "Proyectiles": personaje.proyectiles,
-                "Puntaje": personaje.puntaje
-            })
-        else:
-            # Agregar un nuevo personaje
-            usuarios_existentes[personaje.nombre] = {
-                "Nombre": personaje.nombre,
-                "Intentos": personaje.intentos,
-                "Vida": personaje.vida,
-                "Escudo": personaje.escudo,
-                "Proyectiles": personaje.proyectiles,
-                "Puntaje": personaje.puntaje
-            }
-        
-        # Guardar los datos actualizados en el CSV
+        usuarios_existentes = leer_datos_csv(archivo_csv)
+        usuarios_existentes[personaje.nombre] = {
+            "Nombre": personaje.nombre,
+            "Intentos": personaje.intentos,
+            "Vida": personaje.vida,
+            "Escudo": personaje.escudo,
+            "Proyectiles": personaje.proyectiles,
+            "Tiempo": nivel.tiempo_restante,
+            "Puntaje": personaje.puntaje
+        }
         escribir_datos_csv(archivo_csv, usuarios_existentes)
     else:
         print("Error: El nombre del personaje está vacío.")
 
-
-# def cargar_estadisticas_para_nuevo_nivel(nombre_usuario, archivo_csv):
-#     # Leer los datos existentes
-#     datos = leer_datos_csv(archivo_csv)
-
-#     # Retornar las estadísticas del usuario
-#     if nombre_usuario in datos:
-#         return datos[nombre_usuario]
-#     else:
-#         return None
+def cargar_datos_jugador(nombre_jugador, archivo_csv):
+    usuarios_existentes = leer_datos_csv(archivo_csv)
+    if nombre_jugador in usuarios_existentes:
+        return usuarios_existentes[nombre_jugador]
+    else:
+        print(f"No se encontraron datos para el jugador {nombre_jugador}")
+        return None
 
 
-#===================================LECTURA Y GUARDADO DE GAME OVER ==============================================#
+#===================================LECTURA Y GUARDADO DE GAME OVER ==============================================
+
+# def convertir_tiempo_a_formato_minutos(segundos):
+#     minutos = segundos // 60
+#     segundos_restantes = segundos % 60
+#     return f"{minutos:02}:{segundos_restantes:02}"

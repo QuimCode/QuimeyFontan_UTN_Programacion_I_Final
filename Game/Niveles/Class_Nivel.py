@@ -19,27 +19,28 @@ from ..Recursos.Plataformas.Class_Plataforma import *
 ##---------------------------------##
 
 class Nivel:
-    def __init__(self, numero) -> None:
+    def __init__(self, tiempo_restante, nombre_jugador, numero) -> None:
         pygame.init()
         pygame.joystick.init()
 
 #=================== COMPOSICION VISUAL ===================#
+
         self.ventana = pygame.display.set_mode((ANCHO, ALTO))
         fondo_original = pygame.image.load(fondos_nivel.get(numero))
         self.fondo = pygame.transform.scale(fondo_original, (ANCHO, ALTO)).convert()
 
-#=================== INSTANCIA ===================#
+#=================== INSTANCIA/GRUPOS ===================#
         #Jugador
-        self.jugador = Personaje(10, 950)
+        self.jugador = Personaje(10, 950, nombre=nombre_jugador)
+        print(f"Nombre al iniciar Nivel: {nombre_jugador}")
         self.grupo_proyectiles_jugador = self.jugador.grupo_proyectiles
         self.grupo_proyectiles_jugador = pygame.sprite.Group()
         
-
         #Trampas - Grupo
         self.trampas = pygame.sprite.Group()  # Grupo para almacenar las trampitas
         for trampa in trampas_nivel.get(numero, []):
             self.trampas.add(trampa)  # cada trampa individualmente al grupete
-
+        
         #Enemigos - Grupo
         self.enemigos = pygame.sprite.Group()  
         for enemigo in enemigos_nivel.get(numero, []):
@@ -52,7 +53,8 @@ class Nivel:
 #=================== MARCADORES/TIEMPO/PUNTAJE ===================#
         #Tiempo
         self.reloj = pygame.time.Clock()
-        self.tiempo_restante = 170  # Tiempo inicial en segundos (2 minutos y 50 segundos)
+        self.tiempo_restante = tiempo_restante
+        # self.tiempo_restante = 100  # Tiempo inicial en segundos (2 minutos y 50 segundos)
         self.tiempo_anterior = pygame.time.get_ticks()
         self.tiempo = 0
 
@@ -63,10 +65,9 @@ class Nivel:
         self.fuente = pygame.font.Font(None, 36)
 
 #=================== PASAR NIVEL ===================#
+
         self.numero = numero
-        # self.player_data = player_data
-        # self.player_id = player_id
-        # self.load_player_data()
+
 
         # Coordenadas de transición para cada nivel
         self.transicion_coordenadas = {
@@ -76,6 +77,7 @@ class Nivel:
         }
 
 #=================== MANEJADOR/CONTROLES ===================#
+
     def manejador_eventos_nivel(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -103,8 +105,17 @@ class Nivel:
                 if event.key == pygame.K_a or event.key == pygame.K_d:
                     self.jugador.movimiento_detener()
 
-
 #=================== MANEJADOR/NIVELES ===================#
+
+    def cargar_progreso_jugador(self):
+        datos_jugador = cargar_datos_jugador(self.nombre_jugador, 'datos_jugadores.csv')
+        if datos_jugador:
+            self.jugador.cargar_progreso(datos_jugador)
+            print(f"Se cargaron los datos del jugador {self.nombre_jugador}")
+        else:
+            print(f"No se pudo cargar el progreso del jugador {self.nombre_jugador}. Usando valores por defecto.")
+
+
     def verificar_transicion(self):
         if self.numero in self.transicion_coordenadas:
             x, y = self.transicion_coordenadas[self.numero]
@@ -113,6 +124,7 @@ class Nivel:
         return False
 
 #=================== MANEJADOR/TEXTO ===================#
+
     def dibujar_texto_de_niveles(self, superficie):
         texto_posiciones = {
             "Intentos": (250, 50),
@@ -160,7 +172,7 @@ class Nivel:
 
     def actualizar_tiempo(self):
         tiempo_actual = pygame.time.get_ticks()
-        if tiempo_actual - self.tiempo_anterior >= 1000:  # 1000 milisegundos = 1 segundo
+        if tiempo_actual - self.tiempo_anterior >= 1000:
             self.tiempo_restante -= 1
             self.tiempo_anterior = tiempo_actual
             if self.tiempo_restante <= 0:
@@ -171,7 +183,7 @@ class Nivel:
                 else:
                     print("Game Over")
                     pygame.quit()
-                    sys.exit()
+
 
     def reiniciar_nivel(self):
         self.jugador.vida = self.jugador.vida_maxima  # Reiniciar la vida del jugador
@@ -181,7 +193,7 @@ class Nivel:
 
     def finalizar_nivel(self):
         archivo_csv = "datos_jugadores.csv"
-        guardar_estadisticas_al_final_del_nivel(self.jugador, archivo_csv)  # Asume que self.jugador es una instancia de Personaje
+        guardar_estadisticas_al_final_del_nivel(self.jugador, self, archivo_csv)  # Asume que self.jugador es una instancia de Personaje
         print("Estadísticas guardadas al final del nivel")
 
     def dibujar_nivel(self):
@@ -241,12 +253,12 @@ class Nivel:
 #-------------LISTA/DICCIONARIO PLATAFORMAS-------------#
 
 plataformas_nivel = {
-    1: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
+    1: [ Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL), PlataformaBase(0, 1040, 1920, 30, ROJO) ],
     2: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
     3: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
 }
 
-# Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL)
+
 
 trampas_nivel = {
     1: [Trampa(500, 900)],
