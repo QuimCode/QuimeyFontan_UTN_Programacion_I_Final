@@ -10,11 +10,10 @@ from os.path import isfile, join
 from Game.Recursos.Parametros import *
 from ..Personajes.Personaje import Personaje, lista_proyectiles
 from ..Personajes.Enemigo import Enemigo, EnemigoVolador, EnemigoMago
-from ..Recursos.Sprites.Sprites import *
+from ..Recursos.Plataformas.Class_Plataforma import Plataformas, PlataformaBase, PlataformaRoca, PlataformaVoladora
+from ..Recursos.Objetos.Class_Objeto import Objeto, PocionVida, PocionEscudo, LlavePortal
 from ..Recursos.Trampas.Trampa import Trampa
-from ..Recursos.Plataformas.Class_Plataforma import *
-# from ..Recursos.Colision.Colisiones import comprobacion_colision
-
+from ..Recursos.Sprites.Sprites import *
 
 ##---------------------------------##
 
@@ -36,19 +35,75 @@ class Nivel:
         self.grupo_proyectiles_jugador = self.jugador.grupo_proyectiles
         self.grupo_proyectiles_jugador = pygame.sprite.Group()
         
+        #Objetos - Grupo
+        self.objetos = pygame.sprite.Group()  # Grupo para almacenar los objetos
+
+        #Objetos - Diccionario por nivel
+        objetos_nivel = {
+            1: [PocionVida(100, 900, 'Game/Recursos/Pociones/Vida.png', 40, 40), PocionEscudo(200, 900, 'Game/Recursos/Pociones/Escudo.png', 40, 40)],
+            2: [],
+            3: []
+        }
+
+        for objeto in objetos_nivel.get(numero, []):
+            self.objetos.add(objeto)  # cada objeto individualmente al grupete
+
         #Trampas - Grupo
         self.trampas = pygame.sprite.Group()  # Grupo para almacenar las trampitas
+
+        #Trampas - Diccionario por nivel
+        trampas_nivel = {
+            1: [Trampa(500, 900)],
+            2: [],
+            3: []
+        }
+
         for trampa in trampas_nivel.get(numero, []):
             self.trampas.add(trampa)  # cada trampa individualmente al grupete
-        
+
         #Enemigos - Grupo
         self.enemigos = pygame.sprite.Group()  
+
+        #Enemigos - Diccionario por nivel
+        enemigos_nivel = {
+            1: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")],
+            2: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")],
+            3: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")]
+        }
+
+
         for enemigo in enemigos_nivel.get(numero, []):
             self.enemigos.add(enemigo)  # cada enemigo individualmente
         
-        #Plataformas - Grupo
+
+        # Plataformas - Grupo
         self.plataformas = pygame.sprite.Group()
-        self.plataformas.add(plataformas_nivel[numero])
+        tileset = pygame.image.load('Game/Recursos/Tileset/Tileset.png').convert_alpha()
+        imagen_roca = pygame.image.load('Game/Recursos/Rocas/Roca3.png').convert_alpha()
+
+        # Plataformas - Diccionario por nivel
+        plataformas_nivel = {
+            1: [ 
+                PlataformaRoca(200, 960, 100, 100, imagen_roca),
+                PlataformaVoladora(370, 960, 100, 30),
+                PlataformaVoladora(900, 800, 500, 30),
+                PlataformaBase(0, 1020, 1920, 30)
+            ],
+            2: [ 
+                PlataformaBase(0, 1040, 1920, 30)
+            ],
+            3: [ 
+                PlataformaBase(0, 1040, 1920, 30)
+            ],
+        }
+
+        # Añadir plataformas con tileset
+        for plataforma in plataformas_nivel[numero]:
+            if isinstance(plataforma, PlataformaRoca):
+                plataforma.imagen_roca = imagen_roca  
+            elif isinstance(plataforma, (PlataformaBase, PlataformaVoladora)):
+                plataforma.aplicar_tileset(tileset)
+            self.plataformas.add(plataforma)
 
 #=================== MARCADORES/TIEMPO/PUNTAJE ===================#
         #Tiempo
@@ -210,6 +265,9 @@ class Nivel:
         for plataforma in self.plataformas:
             plataforma.dibujar_en_pantalla(self.ventana)
 
+        for objetos in self.objetos:
+            objetos.dibujar_en_pantalla(self.ventana)
+
         for trampa in self.trampas:
             trampa.dibujar_trampa(self.ventana)
 
@@ -225,7 +283,7 @@ class Nivel:
         limites_ventana = [0, ANCHO, 0, ALTO]
 
         self.manejador_eventos_nivel()
-        self.jugador.actualizar_personaje(self.plataformas, self.grupo_proyectiles_jugador, self.enemigos, self.trampas, limites_ventana)
+        self.jugador.actualizar_personaje(self.plataformas, self.grupo_proyectiles_jugador, self.enemigos, self.trampas, self.objetos, limites_ventana)
         self.grupo_proyectiles_jugador.update()
         self.plataformas.update()
         self.enemigos.update()
@@ -252,25 +310,26 @@ class Nivel:
 
 #-------------LISTA/DICCIONARIO PLATAFORMAS-------------#
 
-plataformas_nivel = {
-    1: [ Plataformas(200, 960, 100, 100, AZUL), Plataformas(370, 960, 100, 30, AZUL) ,Plataformas(900, 800, 500, 30, AZUL), PlataformaBase(0, 1040, 1920, 30, ROJO) ],
-    2: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
-    3: [ PlataformaBase(0, 1040, 1920, 30, ROJO) ],
-}
+# plataformas_nivel = {
+#     1: [ 
+#         PlataformaRoca(200, 960, 100, 100, imagen_roca),
+#         Plataformas(370, 960, 100, 30),
+#         Plataformas(900, 800, 500, 30),
+#         PlataformaBase(0, 1020, 1920, 30)
+#     ],
+#     2: [ 
+#         PlataformaBase(0, 1040, 1920, 30)
+#     ],
+#     3: [ 
+#         PlataformaBase(0, 1040, 1920, 30)
+#     ],
+# }
 
 
 
-trampas_nivel = {
-    1: [Trampa(500, 900)],
-    2: [],
-    3: []
-}
 
-enemigos_nivel = {
-    1: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")],
-    2: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")],
-    3: [Enemigo(1100, 720), Enemigo(2100, 710), Enemigo(3100, 710), Enemigo(4100, 710), Enemigo(5100, 710), EnemigoVolador(400, 650), EnemigoMago(100, 650, "izquierda"), EnemigoMago(600, 650, "derecha")]
-}
+
+
 
 fondos_nivel = {
     1: "Game/Recursos/Mapas_Fondos/Free Pixel Art Forest/Preview/Back1920.png",

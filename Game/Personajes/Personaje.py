@@ -5,7 +5,6 @@ import pygame
 ##--------------------------------##
 
 from ..Recursos.Parametros import *
-# from ..Recursos.Sprites.Sprites import *
 from ..Recursos.Sprites.Sprites import *
 from ..Recursos.Proyectiles.Proyectil import ProyectilJugador
 import datetime
@@ -13,7 +12,6 @@ import datetime
 
 ##--------------------------------##
 archivo_csv = 'datos_jugadores.csv'
-# ultimo_nombre = obtener_ultimo_nombre_usuario(archivo_csv)
 instancia_sprite = estado_quieto(), estado_izquierda(), estado_derecha(), estado_saltando()
 lista_proyectiles = []
 
@@ -74,12 +72,12 @@ class Personaje:
         self.movimidose_derecha = False
         self.movimiendose_izquierda = False
 
-
         self.nombre = nombre
         self.intentos = intentos
         self.vida = vida
-        self.vida_maxima = vida
+        self.vida_maxima = 100
         self.escudo = escudo
+        self.escudo_maximo = 60
         self.proyectiles = proyectiles
         self.puntaje = puntaje
         self.tiempo = tiempo
@@ -161,6 +159,31 @@ class Personaje:
                 if self.rect.bottom > enemigo.rect.top and self.rect.top < enemigo.rect.bottom:
                     enemigo.vida_enemigo -= 100
                     print(f"El jugador hizo daño al enemigo. Vida del enemigo: {enemigo.vida_enemigo}")
+
+    def aplicar_objetos(self, pociones_vida, pociones_escudo):
+        from ..Recursos.Objetos.Class_Objeto import PocionVida, PocionEscudo
+
+        lista_pociones_vida = list(pociones_vida)
+        lista_pociones_escudo = list(pociones_escudo)
+
+        lista_pociones = lista_pociones_vida + lista_pociones_escudo
+
+        for objeto in lista_pociones:
+            # Asegúrate de que el objeto tiene el atributo rect antes de proceder
+            if hasattr(objeto, 'rect') and self.rect.colliderect(objeto.rect):
+                # Verificar el tipo de objeto y aplicar el efecto correspondiente
+                if isinstance(objeto, PocionVida):
+                    self.vida += objeto.vida_extra
+                    self.vida = min(self.vida, self.vida_maxima)  # Asegúrate de no exceder la vida máxima
+                    print(f"Poción de vida recogida. Vida actual del jugador: {self.vida}")
+                    objeto.kill()  # Opcional: eliminar la poción después de usarla
+
+                elif isinstance(objeto, PocionEscudo):
+                    self.escudo += objeto.escudo_extra
+                    self.escudo = min(self.escudo, self.escudo_maximo)  # Asegúrate de no exceder el escudo máximo
+                    print(f"Poción de escudo recogida. Escudo actual del jugador: {self.escudo}")
+                    objeto.kill()  # Opcional: eliminar la poción después de usarla
+
 
     def disparar_proyectil(self):
         # Verifica si hay suficientes proyectiles disponibles
@@ -271,27 +294,28 @@ class Personaje:
             # Verificar colisiones con enemigos
             for enemigo in enemigos:
                 if self.rect.colliderect(enemigo.rect):
-                    # Verificar individualmente cada lado de la colisión
-                    if self.rect.bottom > enemigo.rect.top:  # Colisión desde abajo
-                        self.aplicar_daño(enemigo.daño_ligero_enemigo)  # Aplicar daño lateral
-                        print(f"Recibió daño de enemigo por el lado. Vida: {self.vida}, Escudo: {self.escudo}")
-                        self.ultimo_daño_tiempo = tiempo_actual
-                        break
-                    elif self.rect.top < enemigo.rect.bottom:  # Colisión desde arriba
-                        self.aplicar_daño_enemigo(enemigos)
-                        continue
-                    elif self.rect.right < enemigo.rect.left:  # Colisión desde la izquierda
-                        # Manejar colisión desde la izquierda
-                        self.aplicar_daño(enemigo.daño_ligero_enemigo)
-                        print(f"Recibió daño de enemigo por el lado izquierdo. Vida: {self.vida}, Escudo: {self.escudo}")
-                        self.ultimo_daño_tiempo = tiempo_actual
-                        break
-                    elif self.rect.left > enemigo.rect.right:  # Colisión desde la derecha
-                        # Manejar colisión desde la derecha
-                        self.aplicar_daño(enemigo.daño_ligero_enemigo)
-                        print(f"Recibió daño de enemigo por el lado derecho. Vida: {self.vida}, Escudo: {self.escudo}")
-                        self.ultimo_daño_tiempo = tiempo_actual
-                        break
+                    # Verificar si el personaje está cayendo sobre el enemigo
+                    if self.rect.bottom <= enemigo.rect.top + self.velocidad_Y:
+                        self.aplicar_daño_enemigo([enemigo])
+                        print(f"El jugador hizo daño al enemigo. Vida del enemigo: {enemigo.vida_enemigo}")
+                    else:
+                        # Verificar colisiones laterales y desde abajo
+                        if self.rect.left < enemigo.rect.right and self.rect.right > enemigo.rect.left:
+                            if self.rect.bottom > enemigo.rect.top:  # Colisión desde abajo
+                                self.aplicar_daño(enemigo.daño_ligero_enemigo)  # Aplicar daño lateral
+                                print(f"Recibió daño de enemigo por el lado. Vida: {self.vida}, Escudo: {self.escudo}")
+                                self.ultimo_daño_tiempo = tiempo_actual
+                                break
+                            elif self.rect.right < enemigo.rect.left:  # Colisión desde la izquierda
+                                self.aplicar_daño(enemigo.daño_ligero_enemigo)
+                                print(f"Recibió daño de enemigo por el lado izquierdo. Vida: {self.vida}, Escudo: {self.escudo}")
+                                self.ultimo_daño_tiempo = tiempo_actual
+                                break
+                            elif self.rect.left > enemigo.rect.right:  # Colisión desde la derecha
+                                self.aplicar_daño(enemigo.daño_ligero_enemigo)
+                                print(f"Recibió daño de enemigo por el lado derecho. Vida: {self.vida}, Escudo: {self.escudo}")
+                                self.ultimo_daño_tiempo = tiempo_actual
+                                break
 
             # Verificar colisiones con trampas
             for trampa in trampas:
@@ -300,7 +324,6 @@ class Personaje:
                     print(f"Recibió daño de trampa. Vida: {self.vida}, Escudo: {self.escudo}")
                     self.ultimo_daño_tiempo = tiempo_actual
                     break
-
 
 
     def provocar_daño(self, objetivo, lista_proyectiles):
@@ -358,7 +381,7 @@ class Personaje:
             self.tiempo = int(datos['Tiempo'])
             self.puntaje = int(datos['Puntaje'])
 
-    def actualizar_personaje(self, lista_plataformas, lista_proyectiles, lista_enemigos, lista_trampas, limites=None):
+    def actualizar_personaje(self, lista_plataformas, lista_proyectiles, lista_enemigos, lista_trampas, lista_pociones_vida, lista_pociones_escudo, limites=None):
         # Actualizar el área de ataque
         # self.recibir_daño(lista_proyectiles, lista_enemigos, lista_trampas)
         self.actualizar_area_ataque()
@@ -370,11 +393,11 @@ class Personaje:
         self.aplicar_gravedad()
         self.colisionar_vertical(lista_plataformas)  # Colisiones verticales
 
+        self.aplicar_objetos(lista_pociones_vida, lista_pociones_escudo)
         self.recibir_daño(lista_proyectiles, lista_enemigos, lista_trampas)
         self.provocar_daño(lista_enemigos, lista_proyectiles)
         self.aplicar_daño_enemigo(lista_enemigos)
 
-        # self.aplicar_morir(funcion=self.regresar_al_menu(nombre="-Usuario No Registrado-"))
         self.aplicar_morir()
 
         # Obtener las animaciones correspondientes al estado del personaje
