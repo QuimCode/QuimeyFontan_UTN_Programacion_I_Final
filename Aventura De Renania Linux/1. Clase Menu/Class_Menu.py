@@ -2,7 +2,7 @@
 
 import pygame
 import sys
-from 
+
 
 #-------------------- INICIALIZACION ----------------#
 
